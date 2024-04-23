@@ -11,6 +11,7 @@ import com.vonage.client.messages.viber.ViberFileRequest;
 import com.vonage.client.messages.viber.ViberImageRequest;
 import com.vonage.client.messages.viber.ViberTextRequest;
 import com.vonage.client.messages.whatsapp.*;
+import lombok.Data;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -36,8 +37,8 @@ public final class MessagesController extends VonageController {
 
 	MessageRequest buildMessage(MessageParams params) {
 		String url = nullifyIfEmpty(params.url), text = nullifyIfEmpty(params.text);
-		var channel = Channel.valueOf(params.getSelectedChannel());
-		var messageType = MessageType.valueOf(params.getSelectedType());
+		var channel = Channel.valueOf(params.selectedChannel);
+		var messageType = MessageType.valueOf(params.selectedType);
 
 		MessageRequest.Builder<?, ?> builder = switch (channel) {
 			case SMS -> SmsTextRequest.builder().text(text);
@@ -108,7 +109,7 @@ public final class MessagesController extends VonageController {
 	}
 
 	private String setChannelOptionsAndReturnTemplate(Model model, MessageParams messageParams) {
-		messageParams.setChannelOptions(Channel.values());
+		messageParams.channelOptions = Channel.values();
 		model.addAttribute(MESSAGE_PARAMS_NAME, messageParams);
 		return MESSAGES_TEMPLATE;
 	}
@@ -116,7 +117,7 @@ public final class MessagesController extends VonageController {
 	@GetMapping("/messages")
 	public String messageStart(Model model) {
 		var messageParams = new MessageParams();
-		messageParams.setTo(System.getenv("TO_NUMBER"));
+		messageParams.to = System.getenv("TO_NUMBER");
 		return setChannelOptionsAndReturnTemplate(model, messageParams);
 	}
 
@@ -125,14 +126,14 @@ public final class MessagesController extends VonageController {
 		try {
 			var messageRequest = buildMessage(messageParams);
 			var client = getVonageClient().getMessagesClient();
-			if (messageParams.isSandbox()) {
+			if (messageParams.sandbox) {
 				client.useSandboxEndpoint();
 			}
 			else {
 				client.useRegularEndpoint();
 			}
 			var response = client.sendMessage(messageRequest);
-			messageParams.setMessageId(response.getMessageUuid());
+			messageParams.messageId = response.getMessageUuid();
 			return setChannelOptionsAndReturnTemplate(model, messageParams);
 		}
 		catch (Exception ex) {
@@ -216,83 +217,11 @@ public final class MessagesController extends VonageController {
 		return "{\"text\":\""+formatted+"\"}";
 	}
 
+	@Data
 	public static class MessageParams {
 		private UUID messageId;
 		private boolean sandbox;
 		private String from, to, text, url, selectedChannel, selectedType;
 		private Channel[] channelOptions;
-
-		public UUID getMessageId() {
-			return messageId;
-		}
-
-		public void setMessageId(UUID messageId) {
-			this.messageId = messageId;
-		}
-
-		public boolean isSandbox() {
-			return sandbox;
-		}
-
-		public void setSandbox(boolean sandbox) {
-			this.sandbox = sandbox;
-		}
-
-		public String getFrom() {
-			return from;
-		}
-
-		public void setFrom(String from) {
-			this.from = from;
-		}
-
-		public String getTo() {
-			return to;
-		}
-
-		public void setTo(String to) {
-			this.to = to;
-		}
-
-		public String getText() {
-			return text;
-		}
-
-		public void setText(String text) {
-			this.text = text;
-		}
-
-		public String getUrl() {
-			return url;
-		}
-
-		public void setUrl(String url) {
-			this.url = url;
-		}
-
-		public String getSelectedChannel() {
-			return selectedChannel;
-		}
-
-		public void setSelectedChannel(String selectedChannel) {
-			this.selectedChannel = selectedChannel;
-		}
-
-		public String getSelectedType() {
-			return selectedType;
-		}
-
-		public void setSelectedType(String selectedType) {
-			this.selectedType = selectedType;
-		}
-
-		public Channel[] getChannelOptions() {
-			return channelOptions;
-		}
-
-		public void setChannelOptions(Channel[] channelOptions) {
-			this.channelOptions = channelOptions;
-		}
 	}
-
 }

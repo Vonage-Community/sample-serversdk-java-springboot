@@ -1,7 +1,7 @@
 package com.vonage.sample.serversdk.springboot;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vonage.client.verify2.*;
+import lombok.Data;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +24,9 @@ public class VerifyController extends VonageController {
 	@GetMapping("/verify")
 	public String verificationRequestForm(Model model) {
 		var verifyParams = new VerifyParams();
-		verifyParams.setChannelOptions(Channel.values());
-		verifyParams.setBrand("Vonage");
-		verifyParams.setTo(System.getenv("TO_NUMBER"));
+		verifyParams.channelOptions = Channel.values();
+		verifyParams.brand = "Vonage";
+		verifyParams.to = System.getenv("TO_NUMBER");
 		model.addAttribute("verifyParams", verifyParams);
 		return VERIFY_START_TEMPLATE;
 	}
@@ -34,9 +34,9 @@ public class VerifyController extends VonageController {
 	@PostMapping("/postVerificationRequest")
 	public String postVerificationRequest(@ModelAttribute VerifyParams verifyParams, Model model) {
 		try {
-			var builder = VerificationRequest.builder().brand(verifyParams.getBrand());
-			String to = verifyParams.getTo(), from = verifyParams.getFrom();
-			var channel = Channel.valueOf(verifyParams.getSelectedChannel());
+			var builder = VerificationRequest.builder().brand(verifyParams.brand);
+			String to = verifyParams.to, from = verifyParams.from;
+			var channel = Channel.valueOf(verifyParams.selectedChannel);
 			builder.addWorkflow(switch (channel) {
 				case EMAIL -> new EmailWorkflow(to);
 				case SMS -> SmsWorkflow.builder(to).from(from).build();
@@ -50,8 +50,8 @@ public class VerifyController extends VonageController {
 			}
 			var request = builder.build();
 			var response = getVerifyClient().sendVerification(request);
-			verifyParams.setCodeless(request.isCodeless());
-			verifyParams.setRequestId(response.getRequestId());
+			verifyParams.codeless = request.isCodeless();
+			verifyParams.requestId = response.getRequestId();
 			model.addAttribute("verifyParams", verifyParams);
 			return VERIFY_RESULT_TEMPLATE;
 		}
@@ -64,7 +64,7 @@ public class VerifyController extends VonageController {
 	public String checkVerificationRequest(@ModelAttribute VerifyParams verifyParams, Model model) {
 		try {
 			String result;
-			if (verifyParams.isCodeless()) {
+			if (verifyParams.codeless) {
 				VerificationCallback callback;
 				if ((callback = callbacks.remove(verifyParams.requestId)) == null) synchronized (callbacks) {
 					try {
@@ -133,83 +133,12 @@ public class VerifyController extends VonageController {
 		return standardWebhookResponse();
 	}
 
+	@Data
 	public static class VerifyParams {
 		private boolean codeless;
 		private UUID requestId;
 		private String brand, selectedChannel, to, from, userCode;
 		private Channel[] channelOptions;
 		private Integer codeLength;
-
-		public boolean isCodeless() {
-			return codeless;
-		}
-
-		public void setCodeless(boolean codeless) {
-			this.codeless = codeless;
-		}
-
-		public UUID getRequestId() {
-			return requestId;
-		}
-
-		public void setRequestId(UUID requestId) {
-			this.requestId = requestId;
-		}
-
-		public String getBrand() {
-			return brand;
-		}
-
-		public void setBrand(String brand) {
-			this.brand = brand;
-		}
-
-		public String getSelectedChannel() {
-			return selectedChannel;
-		}
-
-		public void setSelectedChannel(String selectedChannel) {
-			this.selectedChannel = selectedChannel;
-		}
-
-		public String getTo() {
-			return to;
-		}
-
-		public void setTo(String to) {
-			this.to = to;
-		}
-
-		public String getFrom() {
-			return from;
-		}
-
-		public void setFrom(String from) {
-			this.from = from;
-		}
-
-		public String getUserCode() {
-			return userCode;
-		}
-
-		public void setUserCode(String userCode) {
-			this.userCode = userCode;
-		}
-
-		public Channel[] getChannelOptions() {
-			return channelOptions;
-		}
-
-		public void setChannelOptions(Channel[] channelOptions) {
-			this.channelOptions = channelOptions;
-		}
-
-		public Integer getCodeLength() {
-			return codeLength;
-		}
-
-		public void setCodeLength(Integer codeLength) {
-			this.codeLength = codeLength;
-		}
 	}
 }

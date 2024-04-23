@@ -2,6 +2,7 @@ package com.vonage.sample.serversdk.springboot;
 
 import com.vonage.client.voice.*;
 import com.vonage.client.voice.ncco.TalkAction;
+import lombok.Data;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class VoiceController extends VonageController {
 	@GetMapping("/voice")
 	public String voiceCall(Model model) {
 		var params = new VoiceCallParams();
-		params.setToPstn(System.getenv("TO_NUMBER"));
+		params.toPstn = System.getenv("TO_NUMBER");
 		model.addAttribute(VOICE_CALL_PARAMS_NAME, params);
 		return VOICE_TEMPLATE;
 	}
@@ -41,7 +42,7 @@ public class VoiceController extends VonageController {
 					).fromRandomNumber(true)
 					.lengthTimer(25).ringingTimer(20).build()
 			);
-			params.setCallId(event.getUuid());
+			params.callId = event.getUuid();
 			model.addAttribute(VOICE_CALL_PARAMS_NAME, params);
 			return VOICE_TEMPLATE;
 		}
@@ -88,31 +89,8 @@ public class VoiceController extends VonageController {
 		return standardWebhookResponse();
 	}
 
+	@Data
 	public static class VoiceCallParams {
 		private String toPstn, tts, callId;
-
-		public String getToPstn() {
-			return toPstn;
-		}
-
-		public void setToPstn(String toPstn) {
-			this.toPstn = toPstn;
-		}
-
-		public String getTts() {
-			return tts;
-		}
-
-		public void setTts(String tts) {
-			this.tts = tts;
-		}
-
-		public String getCallId() {
-			return callId;
-		}
-
-		public void setCallId(String callId) {
-			this.callId = callId;
-		}
 	}
 }

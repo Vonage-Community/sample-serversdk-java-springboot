@@ -5,9 +5,9 @@ import com.vonage.client.insight.CallerType;
 import com.vonage.client.insight.CarrierDetails;
 import com.vonage.client.insight.InsightClient;
 import com.vonage.client.insight.PortedStatus;
-import com.vonage.client.numbers.ListNumbersFilter;
 import com.vonage.client.numbers.NumbersClient;
 import com.vonage.client.numbers.SearchNumbersFilter;
+import lombok.Data;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -34,20 +34,20 @@ public class AccountController extends VonageController {
 
 	String addParamsAndReturnTemplate(AccountParams accountParams, Model model) {
 		var balanceResponse = getAccountClient().getBalance();
-		accountParams.setBalance(formatMoney("EUR", balanceResponse.getValue()));
+		accountParams.balance = formatMoney("EUR", balanceResponse.getValue());
 		model.addAttribute(ACCOUNT_PARAMS_NAME, accountParams);
 		return ACCOUNT_TEMPLATE;
 	}
 
 	@PostMapping("buyNumber")
 	public String buyNumber(@ModelAttribute(ACCOUNT_PARAMS_NAME) AccountParams params, Model model) {
-		getNumbersClient().buyNumber(params.getCountry(), params.getMsisdn());
+		getNumbersClient().buyNumber(params.country, params.msisdn);
 		return addParamsAndReturnTemplate(params, model);
 	}
 
 	@PostMapping("cancelNumber")
 	public String cancelNumber(@ModelAttribute(ACCOUNT_PARAMS_NAME) AccountParams params, Model model) {
-		getNumbersClient().cancelNumber(params.getCountry(), params.getMsisdn());
+		getNumbersClient().cancelNumber(params.country, params.msisdn);
 		return addParamsAndReturnTemplate(params, model);
 	}
 
@@ -70,27 +70,27 @@ public class AccountController extends VonageController {
 
 	@PostMapping("numberInsight")
 	public String numberInsight(@ModelAttribute(ACCOUNT_PARAMS_NAME) AccountParams params, Model model) {
-		var insight = getInsightClient().getStandardNumberInsight(params.getMsisdn(), params.getCountry());
-		params.setStatus(insight.getStatusMessage());
+		var insight = getInsightClient().getStandardNumberInsight(params.msisdn, params.country);
+		params.status = insight.getStatusMessage();
 		var currentCarrier = insight.getCurrentCarrier();
 		if (currentCarrier != null) {
-			params.setCurrentCarrier("Current carrier: " + formatCarrier(currentCarrier));
+			params.currentCarrier = "Current carrier: " + formatCarrier(currentCarrier);
 		}
 		var originalCarrier = insight.getOriginalCarrier();
 		if (originalCarrier != null) {
-			params.setOriginalCarrier("Original carrier: " + formatCarrier(originalCarrier));
+			params.originalCarrier = "Original carrier: " + formatCarrier(originalCarrier);
 		}
 		var ported = insight.getPorted();
 		if (ported != null && ported != PortedStatus.UNKNOWN) {
-			params.setPorted(ported.name());
+			params.ported = ported.name();
 		}
 		var callerType = insight.getCallerType();
 		if (callerType != null && callerType != CallerType.UNKNOWN) {
-			params.setCallerType(callerType.name());
+			params.callerType = callerType.name();
 		}
 		var callerName = insight.getCallerName();
 		if (callerName != null && !callerName.isBlank()) {
-			params.setCallerName(callerName);
+			params.callerName = callerName;
 		}
 		return addParamsAndReturnTemplate(params, model);
 	}
@@ -155,80 +155,9 @@ public class AccountController extends VonageController {
 		}
 	}
 
+	@Data
 	public static class AccountParams {
 		private String status, balance, country, msisdn, callerName,
 				currentCarrier, originalCarrier, ported, callerType;
-
-		public String getStatus() {
-			return status;
-		}
-
-		public void setStatus(String status) {
-			this.status = status;
-		}
-
-		public String getBalance() {
-			return balance;
-		}
-
-		public void setBalance(String balance) {
-			this.balance = balance;
-		}
-
-		public String getCountry() {
-			return country;
-		}
-
-		public void setCountry(String country) {
-			this.country = country;
-		}
-
-		public String getMsisdn() {
-			return msisdn;
-		}
-
-		public void setMsisdn(String msisdn) {
-			this.msisdn = msisdn;
-		}
-
-		public String getCurrentCarrier() {
-			return currentCarrier;
-		}
-
-		public void setCurrentCarrier(String currentCarrier) {
-			this.currentCarrier = currentCarrier;
-		}
-
-		public String getOriginalCarrier() {
-			return originalCarrier;
-		}
-
-		public void setOriginalCarrier(String originalCarrier) {
-			this.originalCarrier = originalCarrier;
-		}
-
-		public String getPorted() {
-			return ported;
-		}
-
-		public void setPorted(String ported) {
-			this.ported = ported;
-		}
-
-		public String getCallerType() {
-			return callerType;
-		}
-
-		public void setCallerType(String callerType) {
-			this.callerType = callerType;
-		}
-
-		public String getCallerName() {
-			return callerName;
-		}
-
-		public void setCallerName(String callerName) {
-			this.callerName = callerName;
-		}
 	}
 }
