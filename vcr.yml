@@ -1,0 +1,10 @@
+project:
+    name: sample-serversdk-java-springboot
+instance:
+    name: dev
+    runtime: java21
+    entrypoint: [mvn, "exec:java"]
+    region: aws.euw1
+debug:
+    name: debug
+    entrypoint: [./gradlew, runMavenMain]

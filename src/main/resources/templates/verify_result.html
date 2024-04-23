@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Verification result</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+<a href="/">Home</a><br>
+<a href="https://developer.vonage.com/en/verify/overview">Verify API overview</a><br>
+<hr><br>
+<form action="#" th:object="${verifyParams}" method="post">
+    <p>Request ID: <input type="text" minlength="36" maxlength="36" th:field="*{requestId}" th:value="${verifyParams.requestId}"></p>
+    <p>Codeless: <input type="checkbox" th:field="*{codeless}" th:value="${verifyParams.codeless}"></p>
+    <p>Code: <input type="number" maxlength="10" th:field="*{userCode}"/></p><br>
+    <input type="submit" value="Validate" th:formaction="@{/checkVerificationRequest}">
+    <input type="submit" value="Cancel" th:formaction="@{/cancelVerificationRequest}">
+</form>
+<br>
+<h3 th:text="${result}"></h3>
+<hr>
+</body>
+</html>
