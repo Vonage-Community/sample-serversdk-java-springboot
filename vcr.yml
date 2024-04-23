@@ -3,8 +3,7 @@ project:
 instance:
     name: dev
     runtime: java21
-    entrypoint: [mvn, "exec:java"]
+    entrypoint: [mvn, "spring-boot:run"]
     region: aws.euw1
 debug:
-    name: debug
-    entrypoint: [./gradlew, runMavenMain]
+    entrypoint: [mvn, 'spring-boot:run@debug']

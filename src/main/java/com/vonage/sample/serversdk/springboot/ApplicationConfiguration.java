@@ -6,7 +6,6 @@ import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.InvalidPathException;
@@ -20,7 +19,7 @@ public class ApplicationConfiguration {
 	@Bean
 	public WebServerFactoryCustomizer<ConfigurableWebServerFactory> webServerFactoryCustomizer() {
 		return factory -> {
-			factory.setPort(Integer.parseInt(getEnvWithAlt("VCR_PORT", "8080"))); // Set your desired port
+			getEnv("VCR_PORT").map(Integer::parseInt).ifPresent(factory::setPort);
 			try {
 				factory.setAddress(InetAddress.getByAddress(new byte[]{0,0,0,0}));
 			}
@@ -34,8 +33,12 @@ public class ApplicationConfiguration {
 
 	private final VonageClient vonageClient;
 
-	private static String getEnvWithAlt(String primary, String fallback) {
-		return Optional.ofNullable(System.getenv(primary)).orElseGet(() -> System.getenv(fallback));
+	private static Optional<String> getEnv(String env) {
+		return Optional.ofNullable(System.getenv(env));
+	}
+
+	private static String getEnvWithAlt(String primary, String fallbackEnv) {
+		return getEnv(primary).orElseGet(() -> System.getenv(fallbackEnv));
 	}
 
 	@ConstructorBinding
