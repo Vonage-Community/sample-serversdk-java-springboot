@@ -1,5 +1,5 @@
 project:
-    name: sample-serversdk-java-springboot
+    name: sample-javasdk-spring
 instance:
     name: dev
     runtime: java21
