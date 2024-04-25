@@ -2,25 +2,84 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <title>Send a verification</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <div th:include="fragments/head :: preamble"></div>
+    <script>
+        const capitalFirstLetter = str => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+
+        function updateSnippet() {
+            const selectedChannel = $('#selectedChannel option:selected').val()
+            const brand = $('#brand');
+            const to = $('#to').val();
+            const codeLength = $('#codeLength');
+            const from = $('#from');
+
+            const workflow = (() => {
+                switch (selectedChannel) {
+                    default: return `new ${capitalFirstLetter(selectedChannel)}Workflow("${to}")`;
+                    case 'WHATSAPP_INTERACTIVE': return `new WhatsappCodelessWorkflow("${to}", "${from.val()}")`
+                    case 'SILENT_AUTH': return `new SilentAuthWorkflow("${to}")`;
+                }
+            })();
+
+            if (selectedChannel == "WHATSAPP_INTERACTIVE" || selectedChannel == "SILENT_AUTH") {
+                codeLength.hide();
+            }
+            else {
+                codeLength.show();
+            }
+            if (selectedChannel == "WHATSAPP") {
+                from.show();
+            }
+            else {
+                from.hide();
+            }
+
+            let additionalBuilderProps = '';
+            if (codeLength.val()) {
+                const indent = "\n        ";
+                additionalBuilderProps += indent + `.codeLength(${codeLength.val()})`;
+            }
+
+            document.getElementById('code-snippet').textContent = `
+var response = client.getVerifyClient().sendVerification(
+    VerificationRequest.builder()
+        .brand("${brand.val()}")
+        .addWorkflow(${workflow})${additionalBuilderProps}
+        .build()
+);
+`;
+            Prism.highlightAll();
+        }
+
+        $(document).ready(() => {
+            updateSnippet();
+            $('#selectedChannel, #brand, #to, #from, #codeLength').change(() => updateSnippet());
+        });
+    </script>
 </head>
 <body>
 <a href="/">Home</a><br>
 <a href="https://developer.vonage.com/en/verify/overview">Verify API overview</a><br>
 <hr><br>
-<form action="#" th:action="@{/postVerificationRequest}" th:object="${verifyParams}" method="post">
-    <p>Brand name: <input type="text" th:field="*{brand}"/></p>
-    <p>Channel: <br><select th:field="*{selectedChannel}">
-        <th:block th:each="channelOpt: *{channelOptions}">
-            <option th:text="${channelOpt.name}" th:value="${channelOpt.name}" selected></option>
-        </th:block>
-    </select></p>
-    <p>To: <input type="text" minlength="5" maxlength="320" th:field="*{to}"/></p>
-    <p>Code length: <input type="number" min="4" max="10" th:field="*{codeLength}"/></p>
-    <input type="submit" value="Send">
-</form>
-<hr>
+<div class="flex">
+    <div class="w-1/3 p-4">
+        <form action="#" th:action="@{/postVerificationRequest}" th:object="${verifyParams}" method="post">
+            <p>Brand name: <input type="text" th:field="*{brand}" th:id="brand"/></p>
+            <p>Channel: <br><select th:field="*{selectedChannel}" th:id="selectedChannel">
+                <th:block th:each="channelOpt: *{channelOptions}">
+                    <option th:text="${channelOpt.name}" th:value="${channelOpt.name}" selected></option>
+                </th:block>
+            </select></p>
+            <p>To: <input type="text" minlength="5" maxlength="320" th:field="*{to}" th:id="to"/></p>
+            <p>From: <input type="text" minlength="0" maxlength="320" th:field="*{from}" th:id="from"/></p>
+            <p>Code length: <input type="number" min="4" max="10" th:field="*{codeLength}" th:id="codeLength"/></p>
+            <input type="submit" value="Send">
+        </form>
+    </div>
+    <div class="w-1/2 p-4">
+        <h2 class="text-lg font-semibold mb-4">Java Code Snippet</h2>
+        <pre><code class="language-java" id="code-snippet"></code></pre>
+    </div>
+    <hr>
 </body>
 </html>
