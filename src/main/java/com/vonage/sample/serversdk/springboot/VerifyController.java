@@ -27,6 +27,7 @@ public class VerifyController extends VonageController {
 		verifyParams.channelOptions = Channel.values();
 		verifyParams.brand = "Vonage";
 		verifyParams.to = System.getenv("TO_NUMBER");
+		verifyParams.from = System.getenv("FROM_NUMBER");
 		model.addAttribute("verifyParams", verifyParams);
 		return VERIFY_START_TEMPLATE;
 	}
@@ -39,7 +40,7 @@ public class VerifyController extends VonageController {
 			if (from != null && from.isBlank()) from = null;
 			var channel = Channel.valueOf(verifyParams.selectedChannel);
 			builder.addWorkflow(switch (channel) {
-				case EMAIL -> new EmailWorkflow(to);
+				case EMAIL -> new EmailWorkflow(to, from);
 				case SMS -> SmsWorkflow.builder(to).from(from).build();
 				case VOICE -> new VoiceWorkflow(to);
 				case WHATSAPP -> new WhatsappWorkflow(to, from);
