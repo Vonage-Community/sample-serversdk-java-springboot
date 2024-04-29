@@ -3,18 +3,85 @@
 <head>
     <title>Verification result</title>
     <div th:include="fragments/head :: preamble"></div>
+    <script>
+        function blankSnippet() {
+            updateSnippet(`
+String resultMsg;
+// Hover over a submission to see the code!
+`           );
+        }
+
+        $(document).ready(() => {
+            blankSnippet();
+
+            $('#cancel').mouseleave(() => blankSnippet()).mouseover(() => updateSnippet(`
+String resultMsg;
+try {
+    client.getVerify2Client().cancelVerification(response.getRequestId());
+    resultMsg = "Verification workflow aborted.";
+}
+catch (VerifyResponseException ex) {
+    resultMsg = ex.getMessage();
+}
+`           ));
+
+            $('#validate').mouseleave(() => blankSnippet())
+            .mouseover(() => updateSnippet(!$('#codeless').prop('checked') ? `
+String resultMsg;
+try {
+    client.getVerify2Client().checkVerificationCode(
+        response.getRequestId(), // UUID.fromString("${$('#requestId').val()}")
+        "${$('#userCode').val()}"
+    );
+    resultMsg = "Code matched. Verification successful.";
+}
+catch (VerifyResponseException ex) {
+    result = ex.getMessage();
+}
+` : `
+UUID requestId = response.getRequestId();
+String resultMsg;
+VerificationCallback callback;
+if ((callback = callbacks.remove(requestId)) == null) synchronized (callbacks) {
+    try {
+        callbacks.wait(2000);
+        callback = callbacks.remove(requestId);
+    }
+    catch (InterruptedException ie) {
+        // Continue
+    }
+}
+if (callback != null) {
+    assert requestId.equals(callback.getRequestId());
+    resultMsg = callback.getStatus().name();
+    if (callback.getFinalizedAt() != null) {
+        resultMsg += " at " + formatInstant(callback.getFinalizedAt());
+    }
+}
+else {
+    resultMsg = "No response received.";
+}
+`
+            ));
+        });
+    </script>
 </head>
 <body>
 <a href="/">Home</a><br>
 <a href="https://developer.vonage.com/en/verify/overview">Verify API overview</a><br>
 <hr><br>
-<form action="#" th:object="${verifyParams}" method="post">
-    <p>Request ID: <input type="text" minlength="36" maxlength="36" th:field="*{requestId}" th:value="${verifyParams.requestId}"></p>
-    <p>Codeless: <input type="checkbox" th:field="*{codeless}" th:value="${verifyParams.codeless}"></p>
-    <p>Code: <input type="number" maxlength="10" th:field="*{userCode}"/></p><br>
-    <input type="submit" value="Validate" th:formaction="@{/checkVerificationRequest}">
-    <input type="submit" value="Cancel" th:formaction="@{/cancelVerificationRequest}">
-</form>
+<div class="flex">
+    <div class="w-1/3 p-4">
+        <form action="#" th:object="${verifyParams}" method="post">
+            <p>Request ID: <input type="text" minlength="36" maxlength="36" readonly th:id="requestId" th:field="*{requestId}" th:value="${verifyParams.requestId}"></p>
+            <p>Codeless: <input type="checkbox" disabled="disabled" th:id="codeless" th:field="*{codeless}" th:value="${verifyParams.codeless}"></p>
+            <p>Code: <input type="number" maxlength="10" th:id="userCode" th:field="*{userCode}"/></p><br>
+            <input type="submit" value="Validate" th:id="validate" th:formaction="@{/checkVerificationRequest}">
+            <input type="submit" value="Cancel" th:id="cancel" th:formaction="@{/cancelVerificationRequest}">
+        </form>
+    </div>
+    <div th:include="fragments/head :: java-code-snippet"></div>
+</div>
 <br>
 <h3 th:text="${result}"></h3>
 <hr>

@@ -6,9 +6,9 @@
     <script>
         const capitalFirstLetter = str => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
-        function updateSnippet() {
+        function updateVerifySnippet() {
             const selectedChannel = $('#selectedChannel option:selected').val()
-            const brand = $('#brand');
+            const brand = $('#brand').val();
             const to = $('#to').val();
             const codeLength = $('#codeLength');
             const from = $('#from');
@@ -40,20 +40,19 @@
                 additionalBuilderProps += indent + `.codeLength(${codeLength.val()})`;
             }
 
-            document.getElementById('code-snippet').textContent = `
-var response = client.getVerifyClient().sendVerification(
+            updateSnippet(`
+var response = client.getVerify2Client().sendVerification(
     VerificationRequest.builder()
-        .brand("${brand.val()}")
+        .brand("${brand}")
         .addWorkflow(${workflow})${additionalBuilderProps}
         .build()
 );
-`;
-            Prism.highlightAll();
+`           );
         }
 
         $(document).ready(() => {
-            updateSnippet();
-            $('#selectedChannel, #brand, #to, #from, #codeLength').change(() => updateSnippet());
+            updateVerifySnippet();
+            $('#selectedChannel, #brand, #to, #from, #codeLength').change(() => updateVerifySnippet());
         });
     </script>
 </head>
@@ -76,10 +75,8 @@ var response = client.getVerifyClient().sendVerification(
             <input type="submit" value="Send">
         </form>
     </div>
-    <div class="w-1/2 p-4">
-        <h2 class="text-lg font-semibold mb-4">Java Code Snippet</h2>
-        <pre><code class="language-java" id="code-snippet"></code></pre>
-    </div>
-    <hr>
+    <div th:include="fragments/head :: java-code-snippet"></div>
+</div>
+<hr>
 </body>
 </html>

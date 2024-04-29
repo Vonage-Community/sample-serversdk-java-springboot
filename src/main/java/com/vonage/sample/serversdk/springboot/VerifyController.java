@@ -36,6 +36,7 @@ public class VerifyController extends VonageController {
 		try {
 			var builder = VerificationRequest.builder().brand(verifyParams.brand);
 			String to = verifyParams.to, from = verifyParams.from;
+			if (from != null && from.isBlank()) from = null;
 			var channel = Channel.valueOf(verifyParams.selectedChannel);
 			builder.addWorkflow(switch (channel) {
 				case EMAIL -> new EmailWorkflow(to);

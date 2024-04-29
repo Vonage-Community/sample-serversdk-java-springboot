@@ -31,10 +31,20 @@
         <div th:include="::bootstrap"></div>
         <div th:include="::prism"></div>
         <script>
+            function updateSnippet(code) {
+                document.getElementById('code-snippet').textContent = code;
+                Prism.highlightAll();
+                return code;
+            }
+
             $(document).ready(() => {
                 Prism.highlightAll();
             });
         </script>
+    </div>
+    <div th:fragment="java-code-snippet" class="w-1/2 p-4">
+        <h2 class="text-lg font-semibold mb-4">Java Code Snippet</h2>
+        <pre><code class="language-java" id="code-snippet"></code></pre>
     </div>
 </body>
 </html>
