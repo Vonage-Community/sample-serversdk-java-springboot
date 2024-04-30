@@ -26,8 +26,8 @@ public class VerifyController extends VonageController {
 		var verifyParams = new VerifyParams();
 		verifyParams.channelOptions = Channel.values();
 		verifyParams.brand = "Vonage";
-		verifyParams.to = System.getenv("TO_NUMBER");
-		verifyParams.from = System.getenv("FROM_NUMBER");
+		verifyParams.toNumber = System.getenv("TO_NUMBER");
+		verifyParams.fromNumber = System.getenv("FROM_NUMBER");
 		model.addAttribute("verifyParams", verifyParams);
 		return VERIFY_START_TEMPLATE;
 	}
@@ -36,18 +36,27 @@ public class VerifyController extends VonageController {
 	public String postVerificationRequest(@ModelAttribute VerifyParams verifyParams, Model model) {
 		try {
 			var builder = VerificationRequest.builder().brand(verifyParams.brand);
-			String to = verifyParams.to, from = verifyParams.from;
-			if (from != null && from.isBlank()) from = null;
+			String toNumber = verifyParams.toNumber,
+					fromNumber = verifyParams.fromNumber, fromEmail = verifyParams.fromEmail;
+
+			if (fromNumber != null && fromNumber.isBlank()) {
+				fromNumber = null;
+			}
+			if (fromEmail != null && fromEmail.isBlank()) {
+				fromEmail = null;
+			}
 			var channel = Channel.valueOf(verifyParams.selectedChannel);
 			builder.addWorkflow(switch (channel) {
-				case EMAIL -> new EmailWorkflow(to, from);
-				case SMS -> SmsWorkflow.builder(to).from(from).build();
-				case VOICE -> new VoiceWorkflow(to);
-				case WHATSAPP -> new WhatsappWorkflow(to, from);
-				case WHATSAPP_INTERACTIVE -> new WhatsappCodelessWorkflow(to, from);
-				case SILENT_AUTH -> new SilentAuthWorkflow(to);
+				case EMAIL -> new EmailWorkflow(verifyParams.toEmail, fromEmail);
+				case SMS -> SmsWorkflow.builder(toNumber).from(fromNumber).build();
+				case VOICE -> new VoiceWorkflow(toNumber);
+				case WHATSAPP -> new WhatsappWorkflow(toNumber, fromNumber);
+				case WHATSAPP_INTERACTIVE -> new WhatsappCodelessWorkflow(toNumber, fromNumber);
+				case SILENT_AUTH -> new SilentAuthWorkflow(toNumber);
 			});
-			if (verifyParams.codeLength != null) {
+			if (verifyParams.codeLength != null &&
+					channel != Channel.SILENT_AUTH && channel != Channel.WHATSAPP_INTERACTIVE
+			) {
 				builder.codeLength(verifyParams.codeLength);
 			}
 			var request = builder.build();
@@ -139,7 +148,8 @@ public class VerifyController extends VonageController {
 	public static class VerifyParams {
 		private boolean codeless;
 		private UUID requestId;
-		private String brand, selectedChannel, to, from, userCode;
+		private String brand, selectedChannel, userCode,
+				toNumber, toEmail, fromNumber, fromEmail;
 		private Channel[] channelOptions;
 		private Integer codeLength;
 	}
