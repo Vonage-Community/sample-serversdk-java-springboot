@@ -39,7 +39,7 @@ public class VerifyController extends VonageController {
 	public String postVerificationRequest(@ModelAttribute VerifyParams verifyParams, Model model) {
 		try {
 			var builder = VerificationRequest.builder().brand(verifyParams.brand);
-			String toNumber = verifyParams.toNumber,
+			String toNumber = verifyParams.toNumber, toEmail = verifyParams.toEmail,
 					fromNumber = verifyParams.fromNumber, fromEmail = verifyParams.fromEmail;
 
 			if (fromNumber != null && fromNumber.isBlank()) {
@@ -48,26 +48,32 @@ public class VerifyController extends VonageController {
 			if (fromEmail != null && fromEmail.isBlank()) {
 				fromEmail = null;
 			}
-			var channel = Channel.valueOf(verifyParams.selectedChannel);
-			builder.addWorkflow(switch (channel) {
-				case EMAIL -> new EmailWorkflow(verifyParams.toEmail, fromEmail);
-				case SMS -> SmsWorkflow.builder(toNumber).from(fromNumber).build();
-				case VOICE -> new VoiceWorkflow(toNumber);
-				case WHATSAPP -> new WhatsappWorkflow(toNumber, fromNumber);
-				case WHATSAPP_INTERACTIVE -> new WhatsappCodelessWorkflow(toNumber, fromNumber);
-				case SILENT_AUTH -> new SilentAuthWorkflow(toNumber);
-			});
 
-			boolean codeless = (channel == Channel.SILENT_AUTH || channel == Channel.WHATSAPP_INTERACTIVE);
-			if (!codeless && verifyParams.codeLength != null) {
-				builder.codeLength(verifyParams.codeLength);
+			if (toNumber.matches("0+") || "test@example.com".equals(toEmail)) {
+				verifyParams.requestId = UUID.randomUUID();
 			}
-			var request = builder.build();
-			verifyParams.codeless = request.isCodeless();
-			assert verifyParams.codeless == codeless;
-			var response = getVerifyClient().sendVerification(request);
-			verifyParams.requestId = response.getRequestId();
-			verifyParams.checkUrl = response.getCheckUrl();
+			else {
+				var channel = Channel.valueOf(verifyParams.selectedChannel);
+				builder.addWorkflow(switch (channel) {
+					case EMAIL -> new EmailWorkflow(toEmail, fromEmail);
+					case SMS -> SmsWorkflow.builder(toNumber).from(fromNumber).build();
+					case VOICE -> new VoiceWorkflow(toNumber);
+					case WHATSAPP -> new WhatsappWorkflow(toNumber, fromNumber);
+					case WHATSAPP_INTERACTIVE -> new WhatsappCodelessWorkflow(toNumber, fromNumber);
+					case SILENT_AUTH -> new SilentAuthWorkflow(toNumber);
+				});
+
+				boolean codeless = (channel == Channel.SILENT_AUTH || channel == Channel.WHATSAPP_INTERACTIVE);
+				if (!codeless && verifyParams.codeLength != null) {
+					builder.codeLength(verifyParams.codeLength);
+				}
+				var request = builder.build();
+				verifyParams.codeless = request.isCodeless();
+				assert verifyParams.codeless == codeless;
+				var response = getVerifyClient().sendVerification(request);
+				verifyParams.requestId = response.getRequestId();
+				verifyParams.checkUrl = response.getCheckUrl();
+			}
 			model.addAttribute("verifyParams", verifyParams);
 			return VERIFY_RESULT_TEMPLATE;
 		}
