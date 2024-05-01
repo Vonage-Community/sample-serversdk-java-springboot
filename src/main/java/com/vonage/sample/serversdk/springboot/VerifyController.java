@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -54,15 +55,17 @@ public class VerifyController extends VonageController {
 				case WHATSAPP_INTERACTIVE -> new WhatsappCodelessWorkflow(toNumber, fromNumber);
 				case SILENT_AUTH -> new SilentAuthWorkflow(toNumber);
 			});
-			if (verifyParams.codeLength != null &&
-					channel != Channel.SILENT_AUTH && channel != Channel.WHATSAPP_INTERACTIVE
-			) {
+
+			boolean codeless = (channel == Channel.SILENT_AUTH || channel == Channel.WHATSAPP_INTERACTIVE);
+			if (!codeless && verifyParams.codeLength != null) {
 				builder.codeLength(verifyParams.codeLength);
 			}
 			var request = builder.build();
 			var response = getVerifyClient().sendVerification(request);
 			verifyParams.codeless = request.isCodeless();
+			assert verifyParams.codeless == codeless;
 			verifyParams.requestId = response.getRequestId();
+			verifyParams.checkUrl = response.getCheckUrl();
 			model.addAttribute("verifyParams", verifyParams);
 			return VERIFY_RESULT_TEMPLATE;
 		}
@@ -148,6 +151,7 @@ public class VerifyController extends VonageController {
 	public static class VerifyParams {
 		private boolean codeless;
 		private UUID requestId;
+		private URI checkUrl;
 		private String brand, selectedChannel, userCode,
 				toNumber, toEmail, fromNumber, fromEmail;
 		private Channel[] channelOptions;

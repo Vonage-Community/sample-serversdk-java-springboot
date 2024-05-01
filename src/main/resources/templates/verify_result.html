@@ -15,6 +15,7 @@ String resultMsg;
             blankSnippet();
             const codelessDiv = $('#codeless-div');
             const userCodeDiv = $('#userCode-div');
+            const checkUrlDiv = $('#checkUrl-div');
 
             if ($('#codeless').prop('checked')) {
                 codelessDiv.show();
@@ -23,6 +24,12 @@ String resultMsg;
             else {
                 codelessDiv.hide();
                 userCodeDiv.show();
+            }
+            if ($('#checkUrl').val()) {
+                checkUrlDiv.show();
+            }
+            else {
+                checkUrlDiv.hide();
             }
 
             $('#cancel').mouseleave(() => blankSnippet()).mouseover(() => updateSnippet(`
@@ -99,6 +106,16 @@ else {
                 </div>
                 <div class="md:w-1/3">
                     <input type="checkbox" disabled="disabled" id="codeless" th:field="*{codeless}" th:value="*{codeless}" class="bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"/>
+                </div>
+            </div>
+            <div id="checkUrl-div" class="md:flex md:items-center mb-6">
+                <div class="md:w-1/3">
+                    <label for="checkUrl" class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">
+                        Check URL:
+                    </label>
+                </div>
+                <div class="md:w-1/3">
+                    <input type="url" id="checkUrl" readonly th:field="*{checkUrl}" th:value="*{checkUrl}" class="bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"/>
                 </div>
             </div>
             <div id="userCode-div" class="md:flex md:items-center mb-6">

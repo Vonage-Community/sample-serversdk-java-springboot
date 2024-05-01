@@ -116,7 +116,7 @@ var response = client.getVerify2Client().sendVerification(
                         </label>
                     </div>
                     <div class="md:w-2/3">
-                        <input type="number" minlength="5" maxlength="15" th:field="*{toNumber}" id="toNumber" placeholder="447900000001" class="bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"/>
+                        <input type="tel" minlength="5" maxlength="15" th:field="*{toNumber}" id="toNumber" placeholder="447900000001" class="bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"/>
                     </div>
                 </div>
                 <div id="fromNumber-div" class="md:flex md:items-center mb-6">
@@ -126,7 +126,7 @@ var response = client.getVerify2Client().sendVerification(
                         </label>
                     </div>
                     <div class="md:w-2/3">
-                        <input type="number" minlength="5" maxlength="15" th:field="*{fromNumber}" id="fromNumber" class="bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"/>
+                        <input type="tel" minlength="5" maxlength="15" th:field="*{fromNumber}" id="fromNumber" class="bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"/>
                     </div>
                 </div>
             </div>
@@ -138,7 +138,7 @@ var response = client.getVerify2Client().sendVerification(
                         </label>
                     </div>
                     <div class="md:w-2/3">
-                        <input type="text" minlength="5" maxlength="320" th:field="*{toEmail}" id="toEmail" placeholder="email@example.org" class="bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"/>
+                        <input type="email" minlength="5" maxlength="320" th:field="*{toEmail}" id="toEmail" placeholder="email@example.org" class="bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"/>
                     </div>
                 </div>
                 <div id="fromEmail-div" class="md:flex md:items-center mb-6">
@@ -148,7 +148,7 @@ var response = client.getVerify2Client().sendVerification(
                         </label>
                     </div>
                     <div class="md:w-2/3">
-                        <input type="text" minlength="5" maxlength="320" th:field="*{fromEmail}" id="fromEmail" placeholder="Advanced feature" class="bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"/>
+                        <input type="email" minlength="5" maxlength="320" th:field="*{fromEmail}" id="fromEmail" placeholder="Advanced feature" class="bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"/>
                     </div>
                 </div>
             </div>
