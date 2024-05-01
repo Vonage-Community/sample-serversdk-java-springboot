@@ -14,7 +14,7 @@ you can see the snippets in action live without an IDE or local setup!
 ## Pre-requisites
 You will need Java Development Kit 17 or later to run this demo.
 Installation instructions can be found [here for Temurin JDKs](https://adoptium.net/en-GB/installation/) or
-[here for Oracle JDK 21]((https://docs.oracle.com/en/java/javase/21/install/overview-jdk-installation.html).
+[here for Oracle JDK 21](https://docs.oracle.com/en/java/javase/21/install/overview-jdk-installation.html).
 
 You also need a Maven installation. You can download this from [here](https://maven.apache.org/download.cgi) and
 add it to your PATH, or install via your OS's package manager - e.g. `brew install maven` for Homebrew on macOS
@@ -28,6 +28,13 @@ All the parameters required to run the demo can be provided through environment 
 - `VONAGE_APPLICATION_ID`: Vonage application UUID.
 - `VONAGE_PRIVATE_KEY_PATH`: Absolute path to the private key associated with your Vonage application.
 - `VCR_PORT`: Port to run the demo on. By default, this is `8080`.
+
+Other parameters can be provided for convenience or defaults for pre-populating certain fields. These are:
+
+- `TO_NUMBER`
+- `FROM_NUMBER`
+- `TO_EMAIL`
+- `FROM_EMAIL`
 
 ## Build & Run
 If you have [IntelliJ IDEA](https://www.jetbrains.com/idea/) installed, you can import this project
@@ -46,4 +53,9 @@ Make sure the project is built using `mvn clean install`. Then run `vcr deploy -
 The manifest for VCR deployment is defined in [vcr.yml](vcr.yml).
 
 ## VCR Debugging
-// TODO write
+The application can also be debugged with an IDE even while running on VCR, using a remote debugger.
+Run `vcr debug --app-id $VONAGE_APPLICATION_ID`. The JVM will suspend until you attach a debugger to it.
+
+Instructions for setting up remote debugging will vary depending on your IDE, but for IntelliJ, you
+can use the following configuration:
+![debug_config](src/main/resources/static/images/remote_debugging.png)

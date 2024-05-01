@@ -29,6 +29,8 @@ public class VerifyController extends VonageController {
 		verifyParams.brand = "Vonage";
 		verifyParams.toNumber = System.getenv("TO_NUMBER");
 		verifyParams.fromNumber = System.getenv("FROM_NUMBER");
+		verifyParams.toEmail = System.getenv("TO_EMAIL");
+		verifyParams.fromEmail = System.getenv("FROM_EMAIL");
 		model.addAttribute("verifyParams", verifyParams);
 		return VERIFY_START_TEMPLATE;
 	}
@@ -61,9 +63,9 @@ public class VerifyController extends VonageController {
 				builder.codeLength(verifyParams.codeLength);
 			}
 			var request = builder.build();
-			var response = getVerifyClient().sendVerification(request);
 			verifyParams.codeless = request.isCodeless();
 			assert verifyParams.codeless == codeless;
+			var response = getVerifyClient().sendVerification(request);
 			verifyParams.requestId = response.getRequestId();
 			verifyParams.checkUrl = response.getCheckUrl();
 			model.addAttribute("verifyParams", verifyParams);
