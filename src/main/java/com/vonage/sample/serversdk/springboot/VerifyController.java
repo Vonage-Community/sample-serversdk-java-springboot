@@ -49,11 +49,14 @@ public class VerifyController extends VonageController {
 				fromEmail = null;
 			}
 
+			var channel = Channel.valueOf(verifyParams.selectedChannel);
+			boolean codeless = (channel == Channel.SILENT_AUTH || channel == Channel.WHATSAPP_INTERACTIVE);
+			verifyParams.codeless = codeless;
+
 			if (toNumber.matches("0+") || "test@example.com".equals(toEmail)) {
 				verifyParams.requestId = UUID.randomUUID();
 			}
 			else {
-				var channel = Channel.valueOf(verifyParams.selectedChannel);
 				builder.addWorkflow(switch (channel) {
 					case EMAIL -> new EmailWorkflow(toEmail, fromEmail);
 					case SMS -> SmsWorkflow.builder(toNumber).from(fromNumber).build();
@@ -63,13 +66,11 @@ public class VerifyController extends VonageController {
 					case SILENT_AUTH -> new SilentAuthWorkflow(toNumber);
 				});
 
-				boolean codeless = (channel == Channel.SILENT_AUTH || channel == Channel.WHATSAPP_INTERACTIVE);
 				if (!codeless && verifyParams.codeLength != null) {
 					builder.codeLength(verifyParams.codeLength);
 				}
 				var request = builder.build();
-				verifyParams.codeless = request.isCodeless();
-				assert verifyParams.codeless == codeless;
+				assert request.isCodeless() == codeless;
 				var response = getVerifyClient().sendVerification(request);
 				verifyParams.requestId = response.getRequestId();
 				verifyParams.checkUrl = response.getCheckUrl();
