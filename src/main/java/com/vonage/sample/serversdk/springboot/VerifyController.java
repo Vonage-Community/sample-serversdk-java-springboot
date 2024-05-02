@@ -55,6 +55,11 @@ public class VerifyController extends VonageController {
 
 			if (toNumber.matches("0+") || "test@example.com".equals(toEmail)) {
 				verifyParams.requestId = UUID.randomUUID();
+				if (channel == Channel.SILENT_AUTH) {
+					verifyParams.checkUrl = URI.create("https://api.vonage.com/v2/verify/" +
+							verifyParams.requestId + "silent-auth/redirect"
+					);
+				}
 			}
 			else {
 				builder.addWorkflow(switch (channel) {
