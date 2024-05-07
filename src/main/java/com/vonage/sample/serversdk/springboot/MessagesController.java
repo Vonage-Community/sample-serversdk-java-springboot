@@ -91,20 +91,18 @@ public final class MessagesController extends VonageController {
 	@ResponseBody
 	@GetMapping("getSandboxNumbers")
 	public String getSandboxNumbers() {
-		return "{\""+Channel.WHATSAPP.name()+"\":\"14157386102\"}";
+		return "{\"" +
+				Channel.WHATSAPP.name()+"\":\""+System.getenv("VONAGE_WHATSAPP_NUMBER") +
+				"\",\""+Channel.VIBER.name()+"\":\""+System.getenv("VONAGE_VIBER_ID") +
+				"\"}";
 	}
 
 	@ResponseBody
 	@GetMapping("getMessageTypes")
 	public String getMessageTypes(@RequestParam String channel) {
 		var channelEnum = Channel.valueOf(channel);
-		return "[" + channelEnum.getSupportedMessageTypes().stream()
-				.filter(mt -> mt != MessageType.REPLY &&
-						(channelEnum != Channel.MMS || mt != MessageType.TEXT) &&
-						(channelEnum != Channel.VIBER || mt != MessageType.VIDEO) &&
-						mt != MessageType.UNSUPPORTED && mt != MessageType.ORDER &&
-						mt != MessageType.TEMPLATE && mt != MessageType.CUSTOM
-				)
+		return "[" + channelEnum.getSupportedOutboundMessageTypes().stream()
+				.filter(mt -> channelEnum != Channel.VIBER || mt != MessageType.VIDEO)
 				.map(mt -> '"'+mt.name()+'"')
 				.collect(Collectors.joining(",")) + "]";
 	}

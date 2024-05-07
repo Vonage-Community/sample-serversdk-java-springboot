@@ -19,12 +19,7 @@
             let lastSandboxChecked = sandboxChecked;
             if ((sandboxChecked = $(sandboxId).prop('checked')) && sandboxNumbers) {
                 let number = sandboxNumbers[selectedChannel];
-                if (number) {
-                    $(fromId).val(number);
-                }
-                else {
-                    $(fromId).val('');
-                }
+                $(fromId).val(number ? number : '');
             }
             if (lastSandboxChecked && !sandboxChecked) {
                 $(fromId).val('');
@@ -53,12 +48,31 @@
                 });
             }
             populateFromIfSandbox();
+            updateShownElements();
         };
 
         const updateShownElements = function() {
             const msgTypeVal = getSelectedMessageType();
+            const msgTypeDiv = $(msgTypeId+'-div');
+            const sandboxDiv = $(sandboxId+'-div');
             const urlDiv = $(urlDivId);
             const textDiv = $(textDivId);
+            const selectedChannel = getSelectedChannel();
+
+            if (selectedChannel == "SMS" || selectedChannel == "MMS") {
+                $(sandboxId).prop('checked', false);
+                sandboxDiv.hide();
+            }
+            else {
+                sandboxDiv.show();
+            }
+
+            if (selectedChannel == "SMS") {
+                msgTypeDiv.hide();
+            }
+            else {
+                msgTypeDiv.show();
+            }
 
             if (msgTypeVal == "TEXT" || msgTypeVal == "LOCATION") {
                 textDiv.show();
@@ -66,7 +80,6 @@
             }
             else {
                 urlDiv.show();
-                const selectedChannel = getSelectedChannel();
                 if (selectedChannel == "VIBER" || selectedChannel == "MESSENGER") {
                     textDiv.hide();
                 }
@@ -91,7 +104,6 @@
 
         $(document).ready(() => {
             populateMessageTypes();
-            updateShownElements();
             $(msgChannelId).change(populateMessageTypes);
             $(sandboxId).change(populateMessageTypes);
             $(msgTypeId).change(updateShownElements);
@@ -144,7 +156,7 @@
                     </label>
                 </div>
                 <div class="md:w-1/3">
-                    <input type="checkbox" id="sandbox" th:field="*{sandbox}" class="float:left"/>
+                    <input type="checkbox" id="sandbox" th:field="*{sandbox}" checked class="float:left"/>
                 </div>
             </div>
             <div id="to-div" class="md:flex md:items-center mb-6">
@@ -192,6 +204,7 @@
             </div>
         </form>
     </div>
+    <!--div th:include="fragments/head :: java-code-snippet"></div-->
 </div>
 <hr><br>
 <h3 th:text="${result}"></h3>

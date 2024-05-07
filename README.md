@@ -35,6 +35,8 @@ Other parameters can be provided for convenience or defaults for pre-populating 
 - `FROM_NUMBER`
 - `TO_EMAIL`
 - `FROM_EMAIL`
+- `VONAGE_WHATSAPP_NUMBER` - used as the sandbox `from` value
+- `VONAGE_VIBER_ID` - used as the sandbox `from` value
 
 ## Build & Run
 If you have [IntelliJ IDEA](https://www.jetbrains.com/idea/) installed, you can import this project
