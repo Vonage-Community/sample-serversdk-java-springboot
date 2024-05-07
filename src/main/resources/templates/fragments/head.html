@@ -31,6 +31,15 @@
         <div th:include="::bootstrap"></div>
         <div th:include="::prism"></div>
         <script>
+            function enumToCapitalCase(value) {
+                const parts = value.split('_');
+                let output = "";
+                for (let part of parts) {
+                    output += part.charAt(0).toUpperCase() + part.slice(1).toLowerCase() + " ";
+                }
+                return output;
+            }
+
             function updateSnippet(code) {
                 document.getElementById('code-snippet').textContent = code;
                 Prism.highlightAll();
