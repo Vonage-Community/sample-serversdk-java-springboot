@@ -91,6 +91,7 @@ public class VoiceController extends VonageController {
 
 	@Data
 	public static class VoiceCallParams {
+		private TextToSpeechLanguage language;
 		private String toPstn, tts, callId;
 	}
 }

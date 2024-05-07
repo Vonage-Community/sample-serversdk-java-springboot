@@ -102,9 +102,12 @@ var response = client.getVerify2Client().sendVerification(
                 </div>
                 <div class="md:w-2/3">
                     <select th:field="*{selectedChannel}" id="selectedChannel" class="outline-none bg-gray-50 border border-gray-300 text-gray-900 text-m rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
-                        <th:block th:each="channelOpt: *{channelOptions}">
-                            <option th:text="${channelOpt.name}" th:value="${channelOpt.name}" selected></option>
-                        </th:block>
+                        <option value="SMS" selected>SMS</option>
+                        <option value="VOICE">Voice</option>
+                        <option value="EMAIL">Email</option>
+                        <option value="SILENT_AUTH">Silent Auth</option>
+                        <option value="WHATSAPP">WhatsApp</option>
+                        <option value="WHATSAPP_INTERACTIVE">WhatsApp Codeless</option>
                     </select>
                 </div>
             </div>

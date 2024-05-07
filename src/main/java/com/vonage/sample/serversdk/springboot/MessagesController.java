@@ -10,6 +10,7 @@ import com.vonage.client.messages.sms.SmsTextRequest;
 import com.vonage.client.messages.viber.ViberFileRequest;
 import com.vonage.client.messages.viber.ViberImageRequest;
 import com.vonage.client.messages.viber.ViberTextRequest;
+import com.vonage.client.messages.viber.ViberVideoRequest;
 import com.vonage.client.messages.whatsapp.*;
 import lombok.Data;
 import org.springframework.stereotype.Controller;
@@ -63,7 +64,7 @@ public final class MessagesController extends VonageController {
 				default -> throw new IllegalStateException();
 			};
 			case MMS -> switch (messageType) {
-				case VCARD -> MmsVcardRequest.builder().url(url);
+				case VCARD -> MmsVcardRequest.builder().url(url).caption(text);
 				case AUDIO -> MmsAudioRequest.builder().url(url).caption(text);
 				case IMAGE -> MmsImageRequest.builder().url(url).caption(text);
 				case VIDEO -> MmsVideoRequest.builder().url(url).caption(text);
@@ -108,8 +109,7 @@ public final class MessagesController extends VonageController {
 				.collect(Collectors.joining(",")) + "]";
 	}
 
-	private String setChannelOptionsAndReturnTemplate(Model model, MessageParams messageParams) {
-		messageParams.channelOptions = Channel.values();
+	private String setAndReturnTemplate(Model model, MessageParams messageParams) {
 		model.addAttribute(MESSAGE_PARAMS_NAME, messageParams);
 		return MESSAGES_TEMPLATE;
 	}
@@ -118,7 +118,7 @@ public final class MessagesController extends VonageController {
 	public String messageStart(Model model) {
 		var messageParams = new MessageParams();
 		messageParams.to = System.getenv("TO_NUMBER");
-		return setChannelOptionsAndReturnTemplate(model, messageParams);
+		return setAndReturnTemplate(model, messageParams);
 	}
 
 	@PostMapping("/sendMessage")
@@ -134,7 +134,7 @@ public final class MessagesController extends VonageController {
 			}
 			var response = client.sendMessage(messageRequest);
 			messageParams.messageId = response.getMessageUuid();
-			return setChannelOptionsAndReturnTemplate(model, messageParams);
+			return setAndReturnTemplate(model, messageParams);
 		}
 		catch (Exception ex) {
 			return errorTemplate(model, ex);
@@ -222,6 +222,5 @@ public final class MessagesController extends VonageController {
 		private UUID messageId;
 		private boolean sandbox;
 		private String from, to, text, url, selectedChannel, selectedType;
-		private Channel[] channelOptions;
 	}
 }
