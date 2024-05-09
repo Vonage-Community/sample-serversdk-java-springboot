@@ -13,6 +13,23 @@
             });
         }
 
+        function updateVoiceSnippet() {
+            const toPstn = $('#to').val();
+            const text = $('#text').val();
+            const language = $('#language').val();
+
+            updateSnippet(
+`var event = getVoiceClient().createCall(Call.builder()
+        .machineDetection(MachineDetection.CONTINUE)
+        .to(new PhoneEndpoint("${toPstn}"))
+        .ncco(TalkAction.builder("${text}")
+        .language(TextToSpeechLanguage.${language})
+        .premium(true).build()).fromRandomNumber(true)
+        .lengthTimer(25).ringingTimer(20).build()
+);`
+            );
+        }
+
         $(document).ready(() => {
             $.getJSON("getSpokenLanguages", data => {
                 let html = '';
@@ -24,12 +41,15 @@
                         '>' + displayName + '</option>\n';
                 }
                 $('#language').html(html);
+                updateVoiceSnippet();
             });
 
             const callId = $('#callId').text();
             if (callId) {
                 setInterval(setStatus(callId, 1000), 500);
             }
+
+            $('tts-div, #language-div, #to-div').change(() => updateVoiceSnippet());
         });
     </script>
 </head>
@@ -75,7 +95,7 @@
             </div>
         </form>
     </div>
-    <!--div th:include="fragments/head :: java-code-snippet"></div-->
+    <div th:include="fragments/head :: java-code-snippet"></div>
 </div>
 <hr><br>
 <h3 id="callId" th:text="${voiceCallParams.callId}"></h3>
