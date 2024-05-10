@@ -10,7 +10,10 @@
         $.getJSON("getSandboxNumbers", data => {sandboxNumbers = data;});
         const msgChannelId = '#msgChannel';
         const sandboxId = '#sandbox';
+        const toId = '#to';
         const fromId = '#from';
+        const textId = '#text';
+        const urlId = '#url';
         const msgTypeId = '#msgType';
         const textDivId = '#text-div';
         const urlDivId = '#url-div';
@@ -31,7 +34,8 @@
         }
 
         function getSelectedMessageType() {
-            return $(msgTypeId+' option:selected').val();
+            const selected = $(msgTypeId+' option:selected').val();
+            return selected ? selected : "TEXT";
         }
 
         const populateMessageTypes = function() {
@@ -41,7 +45,7 @@
                 $.getJSON("getMessageTypes?channel="+selectedChannel, data => {
                     let html = '';
                     for (let msgType of data) {
-                        let displayName = msgType.charAt(0).toUpperCase() + msgType.slice(1).toLowerCase();
+                        let displayName = enumToCapitalCase(msgType);
                         html += '<option value="'+msgType+'">'+displayName+'</option>\n';
                     }
                     $(msgTypeId).html(html);
@@ -53,11 +57,11 @@
 
         const updateShownElements = function() {
             const msgTypeVal = getSelectedMessageType();
+            const selectedChannel = getSelectedChannel();
             const msgTypeDiv = $(msgTypeId+'-div');
             const sandboxDiv = $(sandboxId+'-div');
             const urlDiv = $(urlDivId);
             const textDiv = $(textDivId);
-            const selectedChannel = getSelectedChannel();
 
             if (selectedChannel == "SMS" || selectedChannel == "MMS") {
                 $(sandboxId).prop('checked', false);
@@ -84,6 +88,8 @@
                     textDiv.hide();
                 }
             }
+
+            updateMessageSnippet();
         };
 
         function setStatus(messageId, timeout) {
@@ -102,11 +108,37 @@
             });
         }
 
+        const updateMessageSnippet = function () {
+            const reqType = enumToCapitalCase(getSelectedChannel()) + enumToCapitalCase(getSelectedMessageType());
+            const to = $(toId).val();
+            const from = $(fromId).val();
+            const text = $(textId).val();
+            const url = $(urlId).val();
+            let mainPart = "";
+            if (text) {
+                mainPart += '.text("'+text+'")';
+            }
+            if (url) {
+                mainPart += '.url("'+url+'")';
+            }
+
+            return updateSnippet(
+`var response = client.getMessagesClient().sendMessage(
+    ${reqType}Request.builder()
+        .to("${to}")
+        .from("${from}")
+        ${mainPart}
+        .build()
+);
+System.out.println(response.getMessageUuid());`
+            );
+        }
+
         $(document).ready(() => {
             populateMessageTypes();
-            $(msgChannelId).change(populateMessageTypes);
-            $(sandboxId).change(populateMessageTypes);
+            $(msgChannelId+', '+sandboxId).change(populateMessageTypes);
             $(msgTypeId).change(updateShownElements);
+            $([toId, fromId, urlId, textId].join(', ')).change(updateMessageSnippet);
 
             const messageId = $('#messageId').text();
             if (messageId) {
@@ -204,7 +236,7 @@
             </div>
         </form>
     </div>
-    <!--div th:include="fragments/head :: java-code-snippet"></div-->
+    <div th:include="fragments/head :: java-code-snippet"></div>
 </div>
 <hr><br>
 <h3 th:text="${result}"></h3>

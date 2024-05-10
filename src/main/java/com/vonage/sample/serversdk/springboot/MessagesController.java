@@ -109,6 +109,7 @@ public final class MessagesController extends VonageController {
 	public String messageStart(Model model) {
 		var messageParams = new MessageParams();
 		messageParams.to = System.getenv("TO_NUMBER");
+		messageParams.text = "Hello, World!";
 		return setAndReturnTemplate(model, messageParams);
 	}
 

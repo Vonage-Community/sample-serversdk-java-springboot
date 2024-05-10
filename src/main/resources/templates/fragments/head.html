@@ -33,10 +33,14 @@
         <script>
             function enumToCapitalCase(value) {
                 const parts = value.split('_');
+                const last = parts.length - 1;
                 let output = "";
-                for (let part of parts) {
-                    output += part.charAt(0).toUpperCase() + part.slice(1).toLowerCase() + " ";
-                }
+                parts.forEach((part, i) => {
+                    output += part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+                    if (i != last) {
+                        output += " ";
+                    }
+                });
                 return output;
             }
 
