@@ -89,7 +89,7 @@
                 }
             }
 
-            updateMessageSnippet();
+            updateMessageSnippet(selectedChannel, msgTypeVal);
         };
 
         function setStatus(messageId, timeout) {
@@ -108,18 +108,20 @@
             });
         }
 
-        const updateMessageSnippet = function () {
-            const reqType = enumToCapitalCase(getSelectedChannel()) + enumToCapitalCase(getSelectedMessageType());
+        const updateMessageSnippet = function (channel, msgType) {
+            const reqType = enumToCapitalCase(channel) + enumToCapitalCase(msgType);
             const to = $(toId).val();
             const from = $(fromId).val();
             const text = $(textId).val();
             const url = $(urlId).val();
+            const hasUrl = url && $(urlDivId).is(":visible");
             let mainPart = "";
-            if (text) {
-                mainPart += '.text("'+text+'")';
-            }
-            if (url) {
+
+            if (hasUrl) {
                 mainPart += '.url("'+url+'")';
+            }
+            if (text && $(textDivId).is(":visible")) {
+                mainPart += '.' + (hasUrl ? 'caption' : 'text') + '("'+text+'")';
             }
 
             return updateSnippet(
@@ -137,8 +139,7 @@ System.out.println(response.getMessageUuid());`
         $(document).ready(() => {
             populateMessageTypes();
             $(msgChannelId+', '+sandboxId).change(populateMessageTypes);
-            $(msgTypeId).change(updateShownElements);
-            $([toId, fromId, urlId, textId].join(', ')).change(updateMessageSnippet);
+            $('#form').change(updateShownElements);
 
             const messageId = $('#messageId').text();
             if (messageId) {
@@ -154,7 +155,7 @@ System.out.println(response.getMessageUuid());`
 <hr><br>
 <div class="flex">
     <div class="w-1/3 p-4">
-        <form action="#" th:action="@{/sendMessage}" th:object="${messageParams}" method="post">
+        <form id="form" th:action="@{/sendMessage}" th:object="${messageParams}" method="post">
             <div id="channel-div" class="md:flex md:items-center mb-6">
                 <div class="md:w-1/3">
                     <label for="msgChannel" class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">
