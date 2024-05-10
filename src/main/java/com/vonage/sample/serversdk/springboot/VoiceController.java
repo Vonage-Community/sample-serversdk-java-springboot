@@ -1,9 +1,7 @@
 package com.vonage.sample.serversdk.springboot;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vonage.client.voice.*;
 import com.vonage.client.voice.ncco.TalkAction;
-import lombok.Data;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +37,8 @@ public class VoiceController extends VonageController {
 		params.language = TextToSpeechLanguage.UNITED_KINGDOM_ENGLISH;
 		params.tts = "Hello, World!";
 		params.toPstn = System.getenv("TO_NUMBER");
+		params.premium = true;
+		params.ringTimer = 20;
 		model.addAttribute(VOICE_CALL_PARAMS_NAME, params);
 		return VOICE_TEMPLATE;
 	}
@@ -51,9 +51,10 @@ public class VoiceController extends VonageController {
 					.to(new PhoneEndpoint(params.toPstn))
 					.ncco(TalkAction.builder(params.tts)
 							.language(params.language)
-							.premium(true).build()
-					).fromRandomNumber(true)
-					.lengthTimer(25).ringingTimer(20).build()
+							.premium(params.premium).build()
+					).lengthTimer(25)
+					.ringingTimer(params.ringTimer)
+					.fromRandomNumber(true).build()
 			);
 			params.callId = event.getUuid();
 			model.addAttribute(VOICE_CALL_PARAMS_NAME, params);
@@ -102,9 +103,11 @@ public class VoiceController extends VonageController {
 		return standardWebhookResponse();
 	}
 
-	@Data
+	@lombok.Data
 	public static class VoiceCallParams {
 		private TextToSpeechLanguage language;
 		private String toPstn, tts, callId;
+		private boolean premium;
+		private Integer ringTimer;
 	}
 }

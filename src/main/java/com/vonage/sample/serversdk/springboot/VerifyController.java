@@ -1,7 +1,6 @@
 package com.vonage.sample.serversdk.springboot;
 
 import com.vonage.client.verify2.*;
-import lombok.Data;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -161,7 +160,7 @@ public class VerifyController extends VonageController {
 		return standardWebhookResponse();
 	}
 
-	@Data
+	@lombok.Data
 	public static class VerifyParams {
 		private boolean codeless;
 		private UUID requestId;

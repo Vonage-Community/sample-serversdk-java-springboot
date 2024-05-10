@@ -2,17 +2,10 @@ package com.vonage.sample.serversdk.springboot;
 
 import com.vonage.client.messages.*;
 import com.vonage.client.messages.messenger.*;
-import com.vonage.client.messages.mms.MmsAudioRequest;
-import com.vonage.client.messages.mms.MmsImageRequest;
-import com.vonage.client.messages.mms.MmsVcardRequest;
-import com.vonage.client.messages.mms.MmsVideoRequest;
-import com.vonage.client.messages.sms.SmsTextRequest;
-import com.vonage.client.messages.viber.ViberFileRequest;
-import com.vonage.client.messages.viber.ViberImageRequest;
-import com.vonage.client.messages.viber.ViberTextRequest;
-import com.vonage.client.messages.viber.ViberVideoRequest;
+import com.vonage.client.messages.mms.*;
+import com.vonage.client.messages.sms.*;
+import com.vonage.client.messages.viber.*;
 import com.vonage.client.messages.whatsapp.*;
-import lombok.Data;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -215,7 +208,7 @@ public final class MessagesController extends VonageController {
 		return "{\"text\":\""+formatted+"\"}";
 	}
 
-	@Data
+	@lombok.Data
 	public static class MessageParams {
 		private UUID messageId;
 		private boolean sandbox;
