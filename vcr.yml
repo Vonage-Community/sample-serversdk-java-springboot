@@ -7,3 +7,12 @@ instance:
     region: aws.euw1
 debug:
     entrypoint: [mvn, 'spring-boot:run@debug']
+environment:
+    - name: TO_NUMBER
+      value: "44700000000"
+    - name: VONAGE_WHATSAPP_NUMBER
+      value: "14157386102"
+    - name: VONAGE_VIBER_ID
+      value: "22353"
+    - name: VONAGE_MESSENGER_ID
+      value: "100071199968376"

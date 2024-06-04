@@ -88,6 +88,7 @@ public final class MessagesController extends VonageController {
 		return "{\"" +
 				Channel.WHATSAPP.name()+"\":\""+System.getenv("VONAGE_WHATSAPP_NUMBER") +
 				"\",\""+Channel.VIBER.name()+"\":\""+System.getenv("VONAGE_VIBER_ID") +
+				"\",\""+Channel.MESSENGER.name()+"\":\""+System.getenv("VONAGE_MESSENGER_ID") +
 				"\"}";
 	}
 

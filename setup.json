@@ -1,0 +1,11 @@
+{
+  "data": [
+    {
+      "type": "TEXT",
+      "title": "To Number",
+      "description": "Default recipient phone number.",
+      "name": "TO_NUMBER",
+      "optional": true
+    }
+  ]
+}
