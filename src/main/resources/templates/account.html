@@ -3,7 +3,8 @@
 <head>
     <title>Account Information</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <div th:include="fragments/head :: preamble"></div>
+    <div th:include="fragments/head :: jquery"></div>
+    <div th:include="fragments/head :: bootstrap"></div>
     <script type="text/javascript">
         const countryId = '#country';
         const smsId = '#sms_price';
@@ -76,7 +77,7 @@
 </ul>
 <label for="country">Price for outbound calls & texts to country: </label>
 <form action="#" th:object="${accountParams}" method="post">
-    <br><select class="form-select" id="country" name="country" th:field="*{country}">
+    <br><select class="form-select" id="country" name="country" th:field="*{country}" style="width:340px;">
         <option th:value="null" th:text="'---Select Country---'"></option>
         <option th:value="'AF'" th:text="'Afghanistan'"></option>
         <option th:value="'AX'" th:text="'Aland Islands'"></option>
