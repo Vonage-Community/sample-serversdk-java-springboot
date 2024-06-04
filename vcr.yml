@@ -3,10 +3,10 @@ project:
 instance:
     name: dev
     runtime: java21
-    entrypoint: [mvn, "spring-boot:run"]
+    entrypoint: ["./mvnw", "spring-boot:run"]
     region: aws.euw1
 debug:
-    entrypoint: [mvn, 'spring-boot:run@debug']
+    entrypoint: ["./mvnw", 'spring-boot:run@debug']
 environment:
     - name: TO_NUMBER
       value: "44700000000"
