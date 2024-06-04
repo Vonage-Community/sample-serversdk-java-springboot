@@ -38,6 +38,10 @@
             return selected ? selected : "TEXT";
         }
 
+        function setTextLabel(value) {
+            $('#text-label').text(value + ": ");
+        }
+
         const populateMessageTypes = function() {
             let lastSelection = selectedChannel;
             selectedChannel = getSelectedChannel();
@@ -63,6 +67,8 @@
             const urlDiv = $(urlDivId);
             const textDiv = $(textDivId);
 
+            setTextLabel("Text");
+
             if (selectedChannel == "SMS" || selectedChannel == "MMS") {
                 $(sandboxId).prop('checked', false);
                 sandboxDiv.hide();
@@ -81,11 +87,19 @@
             if (msgTypeVal == "TEXT" || msgTypeVal == "LOCATION") {
                 textDiv.show();
                 urlDiv.hide();
+                if (msgTypeVal == "LOCATION") {
+                    setTextLabel("Latitude, Longitude");
+                }
             }
             else {
                 urlDiv.show();
-                if (selectedChannel == "VIBER" || selectedChannel == "MESSENGER") {
+                if (selectedChannel == "VIBER" || selectedChannel == "MESSENGER" ||
+                    (selectedChannel == "WHATSAPP" && msgTypeVal == "AUDIO")
+                ) {
                     textDiv.hide();
+                }
+                else {
+                    setTextLabel(msgTypeVal == "STICKER" ? "Sticker ID" : "Caption");
                 }
             }
 
@@ -114,14 +128,18 @@
             const from = $(fromId).val();
             const text = $(textId).val();
             const url = $(urlId).val();
-            const hasUrl = url && $(urlDivId).is(":visible");
+            const hasUrl = $(urlDivId).is(":visible");
+            const hasText = $(textDivId).is(":visible");
             let mainPart = "";
 
             if (hasUrl) {
                 mainPart += '.url("'+url+'")';
             }
-            if (text && $(textDivId).is(":visible")) {
-                mainPart += '.' + (hasUrl ? 'caption' : 'text') + '("'+text+'")';
+            if (hasText) {
+                mainPart += (hasUrl ? '\n        .'+
+                       (msgType == "STICKER" ? 'id' : 'caption')
+                       : '.text')
+                   + '("'+text+'")';
             }
 
             return updateSnippet(
@@ -214,8 +232,7 @@ System.out.println(response.getMessageUuid());`
             </div>
             <div id="text-div" class="md:flex md:items-center mb-6">
                 <div class="md:w-1/3">
-                    <label for="text" class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">
-                        Text:
+                    <label id="text-label" for="text" class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">
                     </label>
                 </div>
                 <div class="md:w-2/3">

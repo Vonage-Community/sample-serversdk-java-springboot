@@ -1,6 +1,7 @@
 package com.vonage.sample.serversdk.springboot;
 
 import com.vonage.client.messages.*;
+import static com.vonage.client.messages.MessageType.*;
 import com.vonage.client.messages.messenger.*;
 import com.vonage.client.messages.mms.*;
 import com.vonage.client.messages.sms.*;
@@ -95,7 +96,9 @@ public final class MessagesController extends VonageController {
 	public String getMessageTypes(@RequestParam String channel) {
 		var channelEnum = Channel.valueOf(channel);
 		return "[" + channelEnum.getSupportedOutboundMessageTypes().stream()
-				.filter(mt -> channelEnum != Channel.VIBER || mt != MessageType.VIDEO)
+				.filter(mt -> mt != TEMPLATE && mt != CUSTOM &&
+						(channelEnum != Channel.VIBER || mt != VIDEO)
+				)
 				.map(mt -> '"'+mt.name()+'"')
 				.collect(Collectors.joining(",")) + "]";
 	}
