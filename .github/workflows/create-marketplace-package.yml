@@ -1,9 +1,8 @@
 name: Create VCR marketplace package
 run-name: ${{ github.actor }} is creating a new marketplace app release
 on:
-  push:
-    tags:
-      - "release-*"
+  release:
+    types: [published]
 
 permissions:
   actions: write
