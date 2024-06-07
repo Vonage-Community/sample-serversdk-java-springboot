@@ -4,7 +4,7 @@ plugins {
 }
 
 task runMavenMain(type: Exec) {
-    commandLine 'mvn', 'exec:java'
+    commandLine 'mvnw', 'spring-boot:run'
 }
 
 dependencyManagement {
