@@ -44,17 +44,9 @@ public final class MessagesController extends VonageController {
 				case VIDEO -> WhatsappVideoRequest.builder().url(url).caption(text);
 				case FILE -> WhatsappFileRequest.builder().url(url).caption(text);
 				case STICKER -> WhatsappStickerRequest.builder().url(url).id(text);
-				case LOCATION -> {
-					var parser = new StringTokenizer(text, ", ");
-					if (parser.countTokens() < 2) {
-						 throw new IllegalArgumentException(
-							 "Latitude followed by longitude should be specified in the text field."
-						 );
-					}
-					double lat = Double.parseDouble(parser.nextToken());
-					double lg = Double.parseDouble(parser.nextToken());
-					yield WhatsappLocationRequest.builder().latitude(lat).longitude(lg);
-				}
+				case LOCATION -> WhatsappLocationRequest.builder()
+                        .name(params.text).address(params.address)
+                        .latitude(params.latitude).longitude(params.longitude);
 				default -> throw new IllegalStateException();
 			};
 			case MMS -> switch (messageType) {
@@ -217,6 +209,7 @@ public final class MessagesController extends VonageController {
 	public static class MessageParams {
 		private UUID messageId;
 		private boolean sandbox;
-		private String from, to, text, url, selectedChannel, selectedType;
+		private double latitude, longitude;
+		private String from, to, text, url, address, selectedChannel, selectedType;
 	}
 }

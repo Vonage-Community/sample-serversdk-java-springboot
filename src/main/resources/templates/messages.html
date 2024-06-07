@@ -17,6 +17,7 @@
         const msgTypeId = '#msgType';
         const textDivId = '#text-div';
         const urlDivId = '#url-div';
+        const locationDivId = '#location-div';
 
         const populateFromIfSandbox = function() {
             let lastSandboxChecked = sandboxChecked;
@@ -66,7 +67,9 @@
             const sandboxDiv = $(sandboxId+'-div');
             const urlDiv = $(urlDivId);
             const textDiv = $(textDivId);
+            const locationDiv = $(locationDivId);
 
+            locationDiv.hide();
             setTextLabel("Text");
 
             if (selectedChannel == "SMS" || selectedChannel == "MMS") {
@@ -88,7 +91,8 @@
                 textDiv.show();
                 urlDiv.hide();
                 if (msgTypeVal == "LOCATION") {
-                    setTextLabel("Latitude, Longitude");
+                    setTextLabel("Name");
+                    locationDiv.show();
                 }
             }
             else {
@@ -130,16 +134,31 @@
             const url = $(urlId).val();
             const hasUrl = $(urlDivId).is(":visible");
             const hasText = $(textDivId).is(":visible");
+            const hasLocation = $(locationDivId).is(":visible");
+
+            let indent = "\n        ";
             let mainPart = "";
 
             if (hasUrl) {
                 mainPart += '.url("'+url+'")';
             }
             if (hasText) {
-                mainPart += (hasUrl ? '\n        .'+
-                       (msgType == "STICKER" ? 'id' : 'caption')
-                       : '.text')
-                   + '("'+text+'")';
+                if (hasUrl) {
+                    mainPart += indent + '.'+(msgType == "STICKER" ? 'id' : 'caption');
+                }
+                else {
+                    mainPart += hasLocation ? '.name' : '.text';
+                }
+                mainPart += '("'+text+'")';
+            }
+            if (hasLocation) {
+                const address = $('#address').val();
+                const latitude = $('#latitude').val();
+                const longitude = $('#longitude').val();
+                mainPart += indent + '.latitude('+latitude+')'+indent+'.longitude('+longitude+')';
+                if (address) {
+                    mainPart += indent + '.address("'+address+'")';
+                }
             }
 
             return updateSnippet(
@@ -241,12 +260,44 @@ System.out.println(response.getMessageUuid());`
             </div>
             <div id="url-div" class="md:flex md:items-center mb-6">
                 <div class="md:w-1/3">
-                    <label for="text" class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">
+                    <label for="url" class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">
                         URL:
                     </label>
                 </div>
                 <div class="md:w-2/3">
                     <input type="url" th:field="*{url}" id="url" maxlength="2000" class="bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"/>
+                </div>
+            </div>
+            <div id="location-div">
+                <div id="address-div" class="md:flex md:items-center mb-6">
+                    <div class="md:w-1/3">
+                        <label for="address" class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">
+                            Address:
+                        </label>
+                    </div>
+                    <div class="md:w-2/3">
+                        <input type="text" th:field="*{address}" id="address" class="bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"/>
+                    </div>
+                </div>
+                <div id="lat-div" class="md:flex md:items-center mb-6">
+                    <div class="md:w-1/3">
+                        <label for="latitude" class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">
+                            Latitude:
+                        </label>
+                    </div>
+                    <div class="md:w-2/3">
+                        <input type="number" step="any" min="-90" max="90" th:field="*{latitude}" id="latitude" class="bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"/>
+                    </div>
+                </div>
+                <div id="long-div" class="md:flex md:items-center mb-6">
+                    <div class="md:w-1/3">
+                        <label for="latitude" class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">
+                            Longitude:
+                        </label>
+                    </div>
+                    <div class="md:w-2/3">
+                        <input type="number" step="any" min="-180" max="180" th:field="*{longitude}" id="longitude" class="bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"/>
+                    </div>
                 </div>
             </div>
             <div id="submit-div" class="md:w-2/3 float-right">
