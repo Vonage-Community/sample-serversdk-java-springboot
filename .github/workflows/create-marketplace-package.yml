@@ -34,7 +34,3 @@ jobs:
           path: "./app.zip"
       - name: Output Artifact ID
         run: echo 'Artifact ID is ${{ steps.upload-release-artifact.outputs.artifact-id }}'
-      - name: Create release from artifact
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "./app.zip"
