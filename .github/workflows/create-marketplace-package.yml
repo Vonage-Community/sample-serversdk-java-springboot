@@ -24,27 +24,17 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-      - run: npm i
       - name: Zip Release
         id: zip-release
-        uses: TheDoctor0/zip-release@0.7.6
-        with:
-          type: "zip"
-          directory: "."
-          path: "."
-          filename: "release.zip"
-          exclusions: "*.git* .git/* *.DS_Store .env create_package.sh .gitignore *.log .github/* .vcr/*"
+        run: create-package.sh
       - name: Upload a Build Artifact
         id: upload-release-artifact
         uses: actions/upload-artifact@v4
         with:
-          path: "./release.zip"
+          path: "./app.zip"
       - name: Output Artifact ID
         run: echo 'Artifact ID is ${{ steps.upload-release-artifact.outputs.artifact-id }}'
       - name: Create release from artifact
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "./release.zip"
+          artifacts: "./app.zip"
