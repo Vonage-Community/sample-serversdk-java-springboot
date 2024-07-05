@@ -16,9 +16,10 @@ You will need Java Development Kit 17 or later to run this demo.
 Installation instructions can be found [here for Temurin JDKs](https://adoptium.net/en-GB/installation/) or
 [here for Oracle JDK 21](https://docs.oracle.com/en/java/javase/21/install/overview-jdk-installation.html).
 
-You also need a Maven installation. You can download this from [here](https://maven.apache.org/download.cgi) and
-add it to your PATH, or install via your OS's package manager - e.g. `brew install maven` for Homebrew on macOS
-or `choco install maven` for Chocolatey on Windows.
+You also need Maven. You can use the wrapper instead by invoking `./mvnw`. For a local installation,
+you can download this from [here](https://maven.apache.org/download.cgi) and add it to your PATH, or
+install via your OS's package manager - e.g. `brew install maven`for Homebrew on macOS,
+`choco install maven` for Chocolatey on Windows, `apt install maven` for Ubuntu etc.
 
 ## Configuration
 All the parameters required to run the demo can be provided through environment variables. These are as follows:
@@ -31,10 +32,10 @@ All the parameters required to run the demo can be provided through environment 
 
 Other parameters can be provided for convenience or defaults for pre-populating certain fields. These are:
 
-- `TO_NUMBER`
-- `FROM_NUMBER`
-- `TO_EMAIL`
-- `FROM_EMAIL`
+- `TO_NUMBER` - default recipient phone number
+- `VONAGE_FROM_NUMBER` - a phone number assigned to your Vonage application
+- `TO_EMAIL` - default recipient e-mail address
+- `VONAGE_FROM_EMAIL` - a sender e-mail address assigned to your Vonage account / application
 - `VONAGE_WHATSAPP_NUMBER` - used as the sandbox `from` value for WhatsApp
 - `VONAGE_VIBER_ID` - used as the sandbox `from` value for Viber
 - `VONAGE_MESSENGER_ID` - used as the sandbox `from` value for Facebook Messenger
@@ -47,9 +48,16 @@ and run it through the IDE, where the entry point is the `Application` class
 To run the demo standalone from the command line, do `mvn install spring-boot:run`.
 Then open a browser to [localhost:8080](http://localhost:8080) to use the application.
 
+### Maven and Gradle
+As a demo application, this project uses Maven, however it can be adapted to work with Gradle too.
+For convenience and illustrative purposes, the necessary files for Gradle are provided. It is recommended
+to use the Gradle wrapper (see the [gradle](gradle) directory), which can be invoked via the `./gradlew`
+command. A sample [build.gradle](build_example.gradle.txt) file, which just invokes the `pom.xml` is provided.
+For Cloud Runtime
+
 ## VCR Deployment
-This demo is designed to be deployed to [Vonage Cloud Runtime (VCR)](https://developer.vonage.com/en/vcr/overview).
-You need to [install the VCR CLI](https://github.com/Vonage/cloud-runtime-cli?tab=readme-ov-file#installation),
+This demo is designed to be deployed to [Vonage Cloud Runtime](https://developer.vonage.com/en/vcr/overview).
+You need to [install the Cloud Runtime CLI](https://github.com/Vonage/cloud-runtime-cli?tab=readme-ov-file#installation),
 and [configure it](https://github.com/Vonage/cloud-runtime-cli/blob/main/docs/vcr.md).
 
 Make sure the project is built using `mvn clean install`. Then run `vcr deploy --app-id $VONAGE_APPLICATION_ID`.
@@ -62,3 +70,8 @@ Run `vcr debug --app-id $VONAGE_APPLICATION_ID`. The JVM will suspend until you 
 Instructions for setting up remote debugging will vary depending on your IDE, but for IntelliJ, you
 can use the following configuration:
 ![debug_config](src/main/resources/static/images/remote_debugging.png)
+
+To debug interactively through Cloud Runtime / CodeHub with the integrated Visual Studio Code editor,
+you can use the [Debug Configuration](.vscode/debug.json) provided in this project. For instructions
+on how to use the debugger, see [the official documentation](https://code.visualstudio.com/docs/java/java-debugging).
+

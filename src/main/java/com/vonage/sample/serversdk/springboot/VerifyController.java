@@ -27,9 +27,9 @@ public class VerifyController extends VonageController {
 		verifyParams.channelOptions = Channel.values();
 		verifyParams.brand = "Vonage";
 		verifyParams.toNumber = System.getenv("TO_NUMBER");
-		verifyParams.fromNumber = System.getenv("FROM_NUMBER");
+		verifyParams.fromNumber = System.getenv("VONAGE_FROM_NUMBER");
 		verifyParams.toEmail = System.getenv("TO_EMAIL");
-		verifyParams.fromEmail = System.getenv("FROM_EMAIL");
+		verifyParams.fromEmail = System.getenv("VONAGE_FROM_EMAIL");
 		model.addAttribute("verifyParams", verifyParams);
 		return VERIFY_START_TEMPLATE;
 	}

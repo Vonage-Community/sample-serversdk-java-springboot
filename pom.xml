@@ -5,10 +5,10 @@
 
     <groupId>com.vonage</groupId>
     <artifactId>sample-serversdk-java-springboot</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 
     <name>Vonage Java Server SDK SpringBoot Demo App</name>
-    <description>Interactive demo application for the Vonage Java SDK and Vonage Cloud Runtime</description>
+    <description>Interactive demo application for the Vonage Java SDK and Cloud Runtime.</description>
     <url>https://github.com/Vonage-Community/sample-serversdk-java-springboot</url>
     <organization>
         <name>Vonage Community</name>
