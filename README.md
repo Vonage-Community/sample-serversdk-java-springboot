@@ -16,11 +16,6 @@ You will need Java Development Kit 17 or later to run this demo.
 Installation instructions can be found [here for Temurin JDKs](https://adoptium.net/en-GB/installation/) or
 [here for Oracle JDK 21](https://docs.oracle.com/en/java/javase/21/install/overview-jdk-installation.html).
 
-You also need Maven. You can use the wrapper instead by invoking `./mvnw`. For a local installation,
-you can download this from [here](https://maven.apache.org/download.cgi) and add it to your PATH, or
-install via your OS's package manager - e.g. `brew install maven`for Homebrew on macOS,
-`choco install maven` for Chocolatey on Windows, `apt install maven` for Ubuntu etc.
-
 ## Configuration
 All the parameters required to run the demo can be provided through environment variables. These are as follows:
 
@@ -50,10 +45,15 @@ Then open a browser to [localhost:8080](http://localhost:8080) to use the applic
 
 ### Maven and Gradle
 As a demo application, this project uses Maven, however it can be adapted to work with Gradle too.
+You can use the Maven wrapper by invoking `./mvnw`. For a local installation, you can download this
+from [here](https://maven.apache.org/download.cgi) and add it to your PATH, or install via your OS's
+package manager.
+
 For convenience and illustrative purposes, the necessary files for Gradle are provided. It is recommended
 to use the Gradle wrapper (see the [gradle](gradle) directory), which can be invoked via the `./gradlew`
-command. A sample [build.gradle](build_example.gradle.txt) file, which just invokes the `pom.xml` is provided.
-For Cloud Runtime
+command. A sample [build.gradle](build_example.gradle) file, which just invokes the `pom.xml` is provided.
+An auto-generated Gradle (Kotlin DSL) configuration is provided for your convenience. To avoid conflicts in
+VS Code, Gradle auto-import is disabled in [the settings](.vscode/settings.json).
 
 ## VCR Deployment
 This demo is designed to be deployed to [Vonage Cloud Runtime](https://developer.vonage.com/en/vcr/overview).
