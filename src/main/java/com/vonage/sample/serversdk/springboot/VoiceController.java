@@ -14,7 +14,7 @@ public class VoiceController extends VonageController {
 			VOICE_TEMPLATE = "voice",
 			VOICE_CALL_PARAMS_NAME = "voiceCallParams";
 
-	private final Map<UUID, EventWebhook> callEvents = new HashMap<>();
+	private final Map<String, EventWebhook> callEvents = new HashMap<>();
 
 	protected VoiceClient getVoiceClient() {
 		return getVonageClient().getVoiceClient();
