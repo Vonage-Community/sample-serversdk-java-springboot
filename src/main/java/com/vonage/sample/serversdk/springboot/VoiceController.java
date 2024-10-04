@@ -64,7 +64,7 @@ public class VoiceController extends VonageController {
 
 	@ResponseBody
 	@GetMapping("getVoiceCallStatusUpdate")
-	public String getVoiceCallStatusUpdate(@RequestParam UUID callId, @RequestParam long timeout) {
+	public String getVoiceCallStatusUpdate(@RequestParam String callId, @RequestParam long timeout) {
 		EventWebhook event;
 		synchronized (callEvents) {
 			if ((event = callEvents.remove(callId)) == null) {

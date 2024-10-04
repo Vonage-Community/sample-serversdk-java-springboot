@@ -1,16 +1,41 @@
 package com.vonage.sample.serversdk.springboot;
 
 import com.vonage.client.camara.numberverification.NumberVerificationClient;
+import com.vonage.client.camara.simswap.SimSwapClient;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
+import java.time.Instant;
 import java.util.UUID;
 
 @Controller
 public final class NetworkFraudController extends VonageController {
+    static final String SIM_SWAP_TEMPLATE_NAME = "sim_swap";
 
     private NumberVerificationClient getNumberVerificationClient() {
         return getVonageClient().getNumberVerificationClient();
+    }
+
+    private SimSwapClient getSimSwapClient() {
+        return getVonageClient().getSimSwapClient();
+    }
+
+    @GetMapping("/simSwap")
+    public String simSwapStart(Model model) {
+        var simSwapParams = new SimSwapParams();
+        simSwapParams.msisdn = System.getenv("TO_NUMBER");
+        model.addAttribute("simSwapParams", simSwapParams);
+        return SIM_SWAP_TEMPLATE_NAME;
+    }
+
+    @PostMapping("/camara/simSwap")
+    public String simSwap(@ModelAttribute SimSwapParams simSwapParams, Model model) {
+        if (simSwapParams.msisdn != null) {
+            simSwapParams.date = getSimSwapClient().retrieveSimSwapDate(simSwapParams.msisdn);
+        }
+        model.addAttribute("simSwapParams", simSwapParams);
+        return SIM_SWAP_TEMPLATE_NAME;
     }
 
     @ResponseBody
@@ -34,5 +59,11 @@ public final class NetworkFraudController extends VonageController {
         boolean result = getNumberVerificationClient().verifyNumber(code);
         System.out.println("Result is "+result);
         return result ? "Number matches." : "Fraudulent!";
+    }
+
+    @lombok.Data
+    public static class SimSwapParams {
+        private String msisdn;
+        private Instant date;
     }
 }

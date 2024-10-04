@@ -1,5 +1,6 @@
 package com.vonage.sample.serversdk.springboot;
 
+import com.vonage.client.messages.sms.SmsTextRequest;
 import com.vonage.client.verify2.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -78,6 +79,16 @@ public class VerifyController extends VonageController {
 				var response = getVerifyClient().sendVerification(request);
 				verifyParams.requestId = response.getRequestId();
 				verifyParams.checkUrl = response.getCheckUrl();
+				if (channel == Channel.SILENT_AUTH) {
+					var messageResponse = getVonageClient().getMessagesClient().sendMessage(
+							SmsTextRequest.builder()
+								.to(toNumber)
+								.from(request.getBrand())
+								.text("Follow this on mobile data: "+response.getCheckUrl())
+								.build()
+					);
+					assert messageResponse != null && messageResponse.getMessageUuid() != null;
+				}
 			}
 			model.addAttribute("verifyParams", verifyParams);
 			return VERIFY_RESULT_TEMPLATE;

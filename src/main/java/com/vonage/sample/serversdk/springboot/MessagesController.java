@@ -70,6 +70,7 @@ public final class MessagesController extends VonageController {
 				case FILE -> ViberFileRequest.builder().url(url);
 				default -> throw new IllegalStateException();
 			};
+			case RCS -> throw new UnsupportedOperationException();	 // TODO
 		};
 		return applyCommonParams(builder, params);
 	}
