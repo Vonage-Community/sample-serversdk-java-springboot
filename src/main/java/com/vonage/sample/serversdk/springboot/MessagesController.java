@@ -4,6 +4,7 @@ import com.vonage.client.messages.*;
 import static com.vonage.client.messages.MessageType.*;
 import com.vonage.client.messages.messenger.*;
 import com.vonage.client.messages.mms.*;
+import com.vonage.client.messages.rcs.*;
 import com.vonage.client.messages.sms.*;
 import com.vonage.client.messages.viber.*;
 import com.vonage.client.messages.whatsapp.*;
@@ -44,6 +45,9 @@ public final class MessagesController extends VonageController {
 				case VIDEO -> WhatsappVideoRequest.builder().url(url).caption(text);
 				case FILE -> WhatsappFileRequest.builder().url(url).caption(text);
 				case STICKER -> WhatsappStickerRequest.builder().url(url).id(text);
+				case REACTION -> text == null || text.isBlank() ?
+						WhatsappReactionRequest.builder().unreact() :
+						WhatsappReactionRequest.builder().reaction(text);
 				case LOCATION -> WhatsappLocationRequest.builder()
                         .name(params.text).address(params.address)
                         .latitude(params.latitude).longitude(params.longitude);
@@ -70,7 +74,13 @@ public final class MessagesController extends VonageController {
 				case FILE -> ViberFileRequest.builder().url(url);
 				default -> throw new IllegalStateException();
 			};
-			case RCS -> throw new UnsupportedOperationException();	 // TODO
+			case RCS -> switch (messageType) {
+				case TEXT -> RcsTextRequest.builder().text(text);
+				case IMAGE -> RcsImageRequest.builder().url(url);
+				case FILE -> RcsFileRequest.builder().url(url);
+				case VIDEO -> RcsVideoRequest.builder().url(url);
+				default -> throw new IllegalStateException();
+			};
 		};
 		return applyCommonParams(builder, params);
 	}
@@ -90,7 +100,7 @@ public final class MessagesController extends VonageController {
 	public String getMessageTypes(@RequestParam String channel) {
 		var channelEnum = Channel.valueOf(channel);
 		return "[" + channelEnum.getSupportedOutboundMessageTypes().stream()
-				.filter(mt -> mt != TEMPLATE && mt != CUSTOM &&
+				.filter(mt -> mt != TEMPLATE && mt != CUSTOM && mt != REACTION &&
 						(channelEnum != Channel.VIBER || mt != VIDEO)
 				)
 				.map(mt -> '"'+mt.name()+'"')
