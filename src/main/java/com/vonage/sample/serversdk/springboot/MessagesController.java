@@ -141,22 +141,20 @@ public final class MessagesController extends VonageController {
 	}
 
 	@ResponseBody
-	@PostMapping("/webhooks/messages/inbound")
-	public String inboundWebhook(@RequestBody String payload) {
-		var parsed = InboundMessage.fromJson(payload);
+	@PostMapping(ApplicationConfiguration.INBOUND_MESSAGE_ENDPOINT)
+	public String inboundWebhook(@RequestBody InboundMessage payload) {
 		synchronized (inboundMessages) {
-			inboundMessages.put(parsed.getMessageUuid(), parsed);
+			inboundMessages.put(payload.getMessageUuid(), payload);
 			inboundMessages.notify();
 		}
 		return standardWebhookResponse();
 	}
 
 	@ResponseBody
-	@PostMapping("/webhooks/messages/status")
-	public String statusWebhook(@RequestBody String payload) {
-		var parsed = MessageStatus.fromJson(payload);
+	@PostMapping(ApplicationConfiguration.MESSAGE_STATUS_ENDPOINT)
+	public String statusWebhook(@RequestBody MessageStatus payload) {
 		synchronized (messageStatuses) {
-			messageStatuses.put(parsed.getMessageUuid(), parsed);
+			messageStatuses.put(payload.getMessageUuid(), payload);
 			messageStatuses.notify();
 		}
 		return standardWebhookResponse();

@@ -7,6 +7,7 @@ import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import java.net.InetAddress;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
@@ -15,11 +16,23 @@ import java.util.UUID;
 
 @ConfigurationProperties(prefix = "vonage")
 public class ApplicationConfiguration {
+	static final String
+			INBOUND_MESSAGE_ENDPOINT = "/webhooks/messages/inbound",
+			MESSAGE_STATUS_ENDPOINT = "/webhooks/messages/status",
+			VERIFY_STATUS_ENDPOINT = "/webhooks/verify/status",
+			VOICE_ANSWER_ENDPOINT = "/webhooks/voice/answer",
+			VOICE_EVENT_ENDPOINT = "/webhooks/voice/event",
+			NUMBER_VERIFICATION_ENDPOINT = "/webhooks/camara/numberVerify";
+
+	final VonageClient vonageClient;
+	final URI serverUrl;
+	final UUID applicationId;
+	final int port;
 
 	@Bean
 	public WebServerFactoryCustomizer<ConfigurableWebServerFactory> webServerFactoryCustomizer() {
 		return factory -> {
-			getEnv("VCR_PORT").map(Integer::parseInt).ifPresent(factory::setPort);
+			factory.setPort(port);
 			try {
 				factory.setAddress(InetAddress.getByAddress(new byte[]{0,0,0,0}));
 			}
@@ -31,7 +44,7 @@ public class ApplicationConfiguration {
 
 	record VonageCredentials(String apiKey, String apiSecret, String applicationId, String privateKey) {}
 
-	private final VonageClient vonageClient;
+	record ApplicationParameters(URI serverUrl, Integer port) {}
 
 	private static Optional<String> getEnv(String env) {
 		return Optional.ofNullable(System.getenv(env));
@@ -42,7 +55,15 @@ public class ApplicationConfiguration {
 	}
 
 	@ConstructorBinding
-	ApplicationConfiguration(VonageCredentials credentials) {
+	ApplicationConfiguration(VonageCredentials credentials, ApplicationParameters parameters) {
+		this.port = parameters != null && parameters.port() != null && parameters.port() > 80 ?
+				parameters.port() : getEnv("VCR_PORT").map(Integer::parseInt).orElse(8080);
+
+		serverUrl = parameters != null && parameters.serverUrl() != null ? parameters.serverUrl() :
+				URI.create(Optional.ofNullable(getEnvWithAlt("VONAGE_SERVER_URL", "VCR_SERVER_URL")).orElseThrow(
+						() -> new IllegalStateException("Server URL not set.")
+				));
+
 		var clientBuilder = VonageClient.builder();
 		var apiKey = getEnvWithAlt("VONAGE_API_KEY", "VCR_API_ACCOUNT_ID");
 		var apiSecret = getEnvWithAlt("VONAGE_API_SECRET", "VCR_API_ACCOUNT_SECRET");
@@ -64,10 +85,13 @@ public class ApplicationConfiguration {
 			}
 		}
 
-		if (privateKey != null && applicationId != null) {
+		if (applicationId == null) {
+			throw new IllegalStateException("Application ID not set.");
+		}
+		this.applicationId = UUID.fromString(applicationId);
+
+		if (privateKey != null) {
 			try {
-				var uuid = UUID.fromString(applicationId);
-				assert uuid.version() > 0;
 				if (privateKey.startsWith("-----BEGIN PRIVATE KEY-----")) {
 					clientBuilder.privateKeyContents(privateKey.getBytes());
 				}
@@ -88,9 +112,5 @@ public class ApplicationConfiguration {
 		}
 
 		vonageClient = clientBuilder.build();
-	}
-
-	public VonageClient getVonageClient() {
-		return vonageClient;
 	}
 }

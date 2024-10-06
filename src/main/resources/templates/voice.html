@@ -119,7 +119,7 @@
             </div>
         </form>
     </div>
-    <div th:include="fragments/head :: java-code-snippet"></div>
+    <div th:include="~{fragments/head :: java-code-snippet}"></div>
 </div>
 <hr><br>
 <h3 id="callId" th:text="${voiceCallParams.callId}"></h3>

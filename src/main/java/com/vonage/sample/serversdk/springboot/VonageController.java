@@ -3,6 +3,7 @@ package com.vonage.sample.serversdk.springboot;
 import com.vonage.client.VonageClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
+import java.net.URI;
 import java.text.NumberFormat;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -21,7 +22,11 @@ public abstract class VonageController {
 	private ApplicationConfiguration configuration;
 
 	protected VonageClient getVonageClient() {
-		return configuration.getVonageClient();
+		return configuration.vonageClient;
+	}
+
+	protected URI getServerUrl() {
+		return configuration.serverUrl;
 	}
 
 	protected String errorTemplate(Model model, Exception ex) {

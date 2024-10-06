@@ -26,10 +26,10 @@
     </div>
     <div th:fragment="preamble">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <div th:include="::jquery"></div>
-        <div th:include="::tailwind"></div>
-        <div th:include="::bootstrap"></div>
-        <div th:include="::prism"></div>
+        <div th:include="~{::jquery}"></div>
+        <div th:include="~{::tailwind}"></div>
+        <div th:include="~{::bootstrap}"></div>
+        <div th:include="~{::prism}"></div>
         <script>
             function enumToCapitalCase(value) {
                 const parts = value.split('_');

@@ -6,9 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 public class VerifyController extends VonageController {
@@ -16,7 +14,7 @@ public class VerifyController extends VonageController {
 			VERIFY_START_TEMPLATE = "verify_start",
 			VERIFY_RESULT_TEMPLATE = "verify_result";
 
-	private final Map<UUID, VerificationCallback> callbacks = new HashMap<>();
+	private final Collection<UUID> successfulVerifications = new LinkedHashSet<>();
 
 	protected Verify2Client getVerifyClient() {
 		return getVonageClient().getVerify2Client();
@@ -68,7 +66,9 @@ public class VerifyController extends VonageController {
 					case VOICE -> new VoiceWorkflow(toNumber);
 					case WHATSAPP -> new WhatsappWorkflow(toNumber, fromNumber);
 					case WHATSAPP_INTERACTIVE -> new WhatsappCodelessWorkflow(toNumber, fromNumber);
-					case SILENT_AUTH -> new SilentAuthWorkflow(toNumber);
+					case SILENT_AUTH -> new SilentAuthWorkflow(
+							toNumber, true,
+							getServerUrl().resolve("/verify/saComplete").toString());
 				});
 
 				if (!codeless && verifyParams.codeLength != null) {
@@ -101,27 +101,18 @@ public class VerifyController extends VonageController {
 	@PostMapping("/checkVerificationRequest")
 	public String checkVerificationRequest(@ModelAttribute VerifyParams verifyParams, Model model) {
 		try {
-			String result;
-			if (verifyParams.codeless) {
-				VerificationCallback callback;
-				if ((callback = callbacks.remove(verifyParams.requestId)) == null) synchronized (callbacks) {
+			String result = "Code matched. Verification successful.";
+			if (verifyParams.codeless || verifyParams.checkUrl != null || verifyParams.getUserCode() == null) {
+				if (!successfulVerifications.contains(verifyParams.requestId)) synchronized (successfulVerifications) {
 					try {
-						callbacks.wait(2000);
-						callback = callbacks.remove(verifyParams.requestId);
+						successfulVerifications.wait(2000);
+						if (!successfulVerifications.remove(verifyParams.requestId)) {
+							result = "Verification failed.";
+						}
 					}
 					catch (InterruptedException ie) {
 						// Continue
 					}
-				}
-				if (callback != null) {
-					assert verifyParams.requestId.equals(callback.getRequestId());
-					result = callback.getStatus().name();
-					if (callback.getFinalizedAt() != null) {
-						result += " at " + formatInstant(callback.getFinalizedAt());
-					}
-				}
-				else {
-					result = "No response received.";
 				}
 			}
 			else {
@@ -161,14 +152,60 @@ public class VerifyController extends VonageController {
 	}
 
 	@ResponseBody
-	@PostMapping("/webhooks/verify2")
-	public String eventsWebhook(@RequestBody String payload) {
-		var parsed = VerificationCallback.fromJson(payload);
-		synchronized (callbacks) {
-			callbacks.put(parsed.getRequestId(), parsed);
-			callbacks.notify();
-		}
+	@PostMapping(ApplicationConfiguration.VERIFY_STATUS_ENDPOINT)
+	public String eventsWebhook(@RequestBody VerificationCallback payload) {
+		System.out.println(payload.toJson());
 		return standardWebhookResponse();
+	}
+
+	@ResponseBody
+	@GetMapping("/verify/saComplete")
+	public String completeRegistrationExternal() {
+		return """
+			<!DOCTYPE html>
+			<html lang="en">
+			<head>
+				<meta charset="UTF-8">
+				<title>Convert Fragment</title>
+				<script type="text/javascript">
+					window.onload = function() {
+						if (window.location.hash) {
+							window.location.replace(window.location.href.replace('#', '/final?'));
+						}
+					};
+				</script>
+			</head>
+			<body>
+			<p>Redirecting...</p>
+			</body>
+			</html>
+		""";
+	}
+
+	@ResponseBody
+	@GetMapping("/verify/saComplete/final")
+	public String completeRegistrationInternal(
+			@RequestParam("request_id") UUID requestId,
+			@RequestParam(required = false) String code,
+			@RequestParam(value = "error_description", required = false) String errorText
+	) {
+		String reason;
+		if (code != null) {
+			var check = getVerifyClient().checkVerificationCode(requestId, code);
+			var status = check.getStatus();
+			if (status == VerificationStatus.COMPLETED) synchronized (successfulVerifications) {
+				successfulVerifications.add(requestId);
+				successfulVerifications.notify();
+				return "<h1>Registration successful!</h1>";
+			}
+			else {
+				reason = status.toString();
+			}
+		}
+		else {
+			reason = errorText;
+		}
+		return "<h1>Registration failed: "+reason+"</h1>";
 	}
 
 	@lombok.Data

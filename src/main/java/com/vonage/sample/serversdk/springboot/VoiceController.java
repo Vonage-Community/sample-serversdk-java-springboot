@@ -82,7 +82,7 @@ public class VoiceController extends VonageController {
 	}
 
 	@ResponseBody
-	@PostMapping("/webhooks/voice/answer")
+	@PostMapping(ApplicationConfiguration.VOICE_ANSWER_ENDPOINT)
 	public String answerWebhook(@RequestBody String payload) {
 		var parsed = AnswerWebhook.fromJson(payload);
 		logger.info("Call "+parsed.getUuid()+" answered");
@@ -90,7 +90,7 @@ public class VoiceController extends VonageController {
 	}
 
 	@ResponseBody
-	@PostMapping("/webhooks/voice/event")
+	@PostMapping(ApplicationConfiguration.VOICE_EVENT_ENDPOINT)
 	public String eventWebhook(@RequestBody String payload) {
 		var parsed = EventWebhook.fromJson(payload);
 		synchronized (callEvents) {

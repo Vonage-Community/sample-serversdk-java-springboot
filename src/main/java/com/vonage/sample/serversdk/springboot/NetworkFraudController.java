@@ -53,7 +53,7 @@ public final class NetworkFraudController extends VonageController {
     }
 
     @ResponseBody
-    @GetMapping("/webhooks/camara/numberVerify")
+    @GetMapping(ApplicationConfiguration.NUMBER_VERIFICATION_ENDPOINT)
     public String inboundWebhook(@RequestParam String code, @RequestParam(required = false) String state) {
         System.out.println("Received code '"+code+"' with state '"+state+"'.");
         boolean result = getNumberVerificationClient().verifyNumber(code);
