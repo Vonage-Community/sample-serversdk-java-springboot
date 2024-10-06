@@ -14,7 +14,7 @@ public class VerifyController extends VonageController {
 			VERIFY_START_TEMPLATE = "verify_start",
 			VERIFY_RESULT_TEMPLATE = "verify_result";
 
-	private final Collection<UUID> successfulVerifications = new LinkedHashSet<>();
+	private final Map<UUID, String> successfulVerifications = new LinkedHashMap<>();
 
 	protected Verify2Client getVerifyClient() {
 		return getVonageClient().getVerify2Client();
@@ -103,10 +103,11 @@ public class VerifyController extends VonageController {
 		try {
 			String result = "Code matched. Verification successful.";
 			if (verifyParams.codeless || verifyParams.checkUrl != null || verifyParams.getUserCode() == null) {
-				if (!successfulVerifications.contains(verifyParams.requestId)) synchronized (successfulVerifications) {
+				String code = successfulVerifications.remove(verifyParams.requestId);
+				if (code == null) synchronized (successfulVerifications) {
 					try {
 						successfulVerifications.wait(2000);
-						if (!successfulVerifications.remove(verifyParams.requestId)) {
+						if ((code = successfulVerifications.remove(verifyParams.requestId)) == null) {
 							result = "Verification failed.";
 						}
 					}
@@ -114,6 +115,7 @@ public class VerifyController extends VonageController {
 						// Continue
 					}
 				}
+				verifyParams.userCode = code;
 			}
 			else {
 				try {
@@ -125,6 +127,7 @@ public class VerifyController extends VonageController {
 				}
 			}
 			model.addAttribute("result", result);
+			model.addAttribute("verifyParams", verifyParams);
 			return VERIFY_RESULT_TEMPLATE;
 		}
 		catch (Exception ex) {
@@ -194,7 +197,7 @@ public class VerifyController extends VonageController {
 			var check = getVerifyClient().checkVerificationCode(requestId, code);
 			var status = check.getStatus();
 			if (status == VerificationStatus.COMPLETED) synchronized (successfulVerifications) {
-				successfulVerifications.add(requestId);
+				successfulVerifications.put(requestId, code);
 				successfulVerifications.notify();
 				return "<h1>Registration successful!</h1>";
 			}
