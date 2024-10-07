@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <title>Verification result</title>
-    <div th:include="fragments/head :: preamble"></div>
+    <div th:include="~{fragments/head :: preamble}"></div>
     <script>
         function blankSnippet() {
             updateSnippet(`
@@ -59,30 +59,21 @@ try {
     resultMsg = "Code matched. Verification successful.";
 }
 catch (VerifyResponseException ex) {
-    result = ex.getMessage();
+    resultMsg = ex.getMessage();
 }
 ` : `
-UUID requestId = response.getRequestId();
-String resultMsg;
-VerificationCallback callback;
-if ((callback = callbacks.remove(requestId)) == null) synchronized (callbacks) {
+String resultMsg = "Code matched. Verification successful."
+String code = successfulVerifications.remove(verifyParams.requestId);
+if (code == null) synchronized (successfulVerifications) {
     try {
-        callbacks.wait(2000);
-        callback = callbacks.remove(requestId);
+        successfulVerifications.wait(2000);
+        if ((code = successfulVerifications.remove(verifyParams.requestId)) == null) {
+            resultMsg = "Verification failed.";
+        }
     }
     catch (InterruptedException ie) {
         // Continue
     }
-}
-if (callback != null) {
-    assert requestId.equals(callback.getRequestId());
-    resultMsg = callback.getStatus().name();
-    if (callback.getFinalizedAt() != null) {
-        resultMsg += " at " + formatInstant(callback.getFinalizedAt());
-    }
-}
-else {
-    resultMsg = "No response received.";
 }
 `
             ));

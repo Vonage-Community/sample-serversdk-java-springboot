@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <title>Make a voice call</title>
-    <div th:include="fragments/head :: preamble"></div>
+    <div th:include="~{fragments/head :: preamble}"></div>
     <script type="text/javascript">
         function setStatus(callId, timeout) {
             const query = "getVoiceCallStatusUpdate?timeout="+timeout+"&callId="+callId;

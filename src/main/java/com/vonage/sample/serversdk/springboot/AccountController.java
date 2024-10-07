@@ -150,9 +150,80 @@ public class AccountController extends VonageController {
 		}
 	}
 
-	@lombok.Data
 	public static class AccountParams {
 		private String status, balance, country, msisdn, callerName,
 				currentCarrier, originalCarrier, ported, callerType;
+
+		public String getStatus() {
+			return status;
+		}
+
+		public void setStatus(String status) {
+			this.status = status;
+		}
+
+		public String getBalance() {
+			return balance;
+		}
+
+		public void setBalance(String balance) {
+			this.balance = balance;
+		}
+
+		public String getCountry() {
+			return country;
+		}
+
+		public void setCountry(String country) {
+			this.country = country;
+		}
+
+		public String getMsisdn() {
+			return msisdn;
+		}
+
+		public void setMsisdn(String msisdn) {
+			this.msisdn = msisdn;
+		}
+
+		public String getCallerName() {
+			return callerName;
+		}
+
+		public void setCallerName(String callerName) {
+			this.callerName = callerName;
+		}
+
+		public String getCurrentCarrier() {
+			return currentCarrier;
+		}
+
+		public void setCurrentCarrier(String currentCarrier) {
+			this.currentCarrier = currentCarrier;
+		}
+
+		public String getOriginalCarrier() {
+			return originalCarrier;
+		}
+
+		public void setOriginalCarrier(String originalCarrier) {
+			this.originalCarrier = originalCarrier;
+		}
+
+		public String getPorted() {
+			return ported;
+		}
+
+		public void setPorted(String ported) {
+			this.ported = ported;
+		}
+
+		public String getCallerType() {
+			return callerType;
+		}
+
+		public void setCallerType(String callerType) {
+			this.callerType = callerType;
+		}
 	}
 }

@@ -214,11 +214,98 @@ public final class MessagesController extends VonageController {
 		return "{\"text\":\""+formatted+"\"}";
 	}
 
-	@lombok.Data
 	public static class MessageParams {
 		private UUID messageId;
 		private boolean sandbox;
 		private double latitude, longitude;
 		private String from, to, text, url, address, selectedChannel, selectedType;
+
+		public UUID getMessageId() {
+			return messageId;
+		}
+
+		public void setMessageId(UUID messageId) {
+			this.messageId = messageId;
+		}
+
+		public boolean isSandbox() {
+			return sandbox;
+		}
+
+		public void setSandbox(boolean sandbox) {
+			this.sandbox = sandbox;
+		}
+
+		public double getLatitude() {
+			return latitude;
+		}
+
+		public void setLatitude(double latitude) {
+			this.latitude = latitude;
+		}
+
+		public double getLongitude() {
+			return longitude;
+		}
+
+		public void setLongitude(double longitude) {
+			this.longitude = longitude;
+		}
+
+		public String getFrom() {
+			return from;
+		}
+
+		public void setFrom(String from) {
+			this.from = from;
+		}
+
+		public String getTo() {
+			return to;
+		}
+
+		public void setTo(String to) {
+			this.to = to;
+		}
+
+		public String getText() {
+			return text;
+		}
+
+		public void setText(String text) {
+			this.text = text;
+		}
+
+		public String getUrl() {
+			return url;
+		}
+
+		public void setUrl(String url) {
+			this.url = url;
+		}
+
+		public String getAddress() {
+			return address;
+		}
+
+		public void setAddress(String address) {
+			this.address = address;
+		}
+
+		public String getSelectedChannel() {
+			return selectedChannel;
+		}
+
+		public void setSelectedChannel(String selectedChannel) {
+			this.selectedChannel = selectedChannel;
+		}
+
+		public String getSelectedType() {
+			return selectedType;
+		}
+
+		public void setSelectedType(String selectedType) {
+			this.selectedType = selectedType;
+		}
 	}
 }

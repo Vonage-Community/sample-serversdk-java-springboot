@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <title>Send a verification</title>
-    <div th:include="fragments/head :: preamble"></div>
+    <div th:include="~{fragments/head :: preamble}"></div>
     <script>
         function updateVerifySnippet() {
             const fromNumberDiv = $('#fromNumber-div');

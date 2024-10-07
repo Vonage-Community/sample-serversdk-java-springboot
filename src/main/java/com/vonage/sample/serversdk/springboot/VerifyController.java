@@ -211,7 +211,6 @@ public class VerifyController extends VonageController {
 		return "<h1>Registration failed: "+reason+"</h1>";
 	}
 
-	@lombok.Data
 	public static class VerifyParams {
 		private boolean codeless;
 		private UUID requestId;
@@ -220,5 +219,101 @@ public class VerifyController extends VonageController {
 				toNumber, toEmail, fromNumber, fromEmail;
 		private Channel[] channelOptions;
 		private Integer codeLength;
+
+		public boolean isCodeless() {
+			return codeless;
+		}
+
+		public void setCodeless(boolean codeless) {
+			this.codeless = codeless;
+		}
+
+		public UUID getRequestId() {
+			return requestId;
+		}
+
+		public void setRequestId(UUID requestId) {
+			this.requestId = requestId;
+		}
+
+		public URI getCheckUrl() {
+			return checkUrl;
+		}
+
+		public void setCheckUrl(URI checkUrl) {
+			this.checkUrl = checkUrl;
+		}
+
+		public String getBrand() {
+			return brand;
+		}
+
+		public void setBrand(String brand) {
+			this.brand = brand;
+		}
+
+		public String getSelectedChannel() {
+			return selectedChannel;
+		}
+
+		public void setSelectedChannel(String selectedChannel) {
+			this.selectedChannel = selectedChannel;
+		}
+
+		public String getUserCode() {
+			return userCode;
+		}
+
+		public void setUserCode(String userCode) {
+			this.userCode = userCode;
+		}
+
+		public String getToNumber() {
+			return toNumber;
+		}
+
+		public void setToNumber(String toNumber) {
+			this.toNumber = toNumber;
+		}
+
+		public String getToEmail() {
+			return toEmail;
+		}
+
+		public void setToEmail(String toEmail) {
+			this.toEmail = toEmail;
+		}
+
+		public String getFromNumber() {
+			return fromNumber;
+		}
+
+		public void setFromNumber(String fromNumber) {
+			this.fromNumber = fromNumber;
+		}
+
+		public String getFromEmail() {
+			return fromEmail;
+		}
+
+		public void setFromEmail(String fromEmail) {
+			this.fromEmail = fromEmail;
+		}
+
+		public Channel[] getChannelOptions() {
+			return channelOptions;
+		}
+
+		public void setChannelOptions(Channel[] channelOptions) {
+			this.channelOptions = channelOptions;
+		}
+
+		public Integer getCodeLength() {
+			return codeLength;
+		}
+
+		public void setCodeLength(Integer codeLength) {
+			this.codeLength = codeLength;
+		}
 	}
 }

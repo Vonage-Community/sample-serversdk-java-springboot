@@ -100,11 +100,58 @@ public class VoiceController extends VonageController {
 		return standardWebhookResponse();
 	}
 
-	@lombok.Data
 	public static class VoiceCallParams {
 		private TextToSpeechLanguage language;
 		private String toPstn, tts, callId;
 		private boolean premium;
 		private Integer ringTimer;
+
+		public TextToSpeechLanguage getLanguage() {
+			return language;
+		}
+
+		public void setLanguage(TextToSpeechLanguage language) {
+			this.language = language;
+		}
+
+		public String getToPstn() {
+			return toPstn;
+		}
+
+		public void setToPstn(String toPstn) {
+			this.toPstn = toPstn;
+		}
+
+		public String getTts() {
+			return tts;
+		}
+
+		public void setTts(String tts) {
+			this.tts = tts;
+		}
+
+		public String getCallId() {
+			return callId;
+		}
+
+		public void setCallId(String callId) {
+			this.callId = callId;
+		}
+
+		public boolean isPremium() {
+			return premium;
+		}
+
+		public void setPremium(boolean premium) {
+			this.premium = premium;
+		}
+
+		public Integer getRingTimer() {
+			return ringTimer;
+		}
+
+		public void setRingTimer(Integer ringTimer) {
+			this.ringTimer = ringTimer;
+		}
 	}
 }

@@ -24,7 +24,7 @@ public final class NetworkFraudController extends VonageController {
     @GetMapping("/simSwap")
     public String simSwapStart(Model model) {
         var simSwapParams = new SimSwapParams();
-        simSwapParams.msisdn = System.getenv("TO_NUMBER");
+        simSwapParams.msisdn = "+990123456";
         model.addAttribute("simSwapParams", simSwapParams);
         return SIM_SWAP_TEMPLATE_NAME;
     }
@@ -61,9 +61,24 @@ public final class NetworkFraudController extends VonageController {
         return result ? "Number matches." : "Fraudulent!";
     }
 
-    @lombok.Data
     public static class SimSwapParams {
         private String msisdn;
         private Instant date;
+
+        public String getMsisdn() {
+            return msisdn;
+        }
+
+        public void setMsisdn(String msisdn) {
+            this.msisdn = msisdn;
+        }
+
+        public Instant getDate() {
+            return date;
+        }
+
+        public void setDate(Instant date) {
+            this.date = date;
+        }
     }
 }
