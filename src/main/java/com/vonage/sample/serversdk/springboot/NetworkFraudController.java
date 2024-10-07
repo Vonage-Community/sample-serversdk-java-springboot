@@ -2,10 +2,10 @@ package com.vonage.sample.serversdk.springboot;
 
 import com.vonage.client.camara.numberverification.NumberVerificationClient;
 import com.vonage.client.camara.simswap.SimSwapClient;
+import static com.vonage.sample.serversdk.springboot.ApplicationConfiguration.NUMBER_VERIFICATION_REDIRECT_ENDPOINT;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import java.net.URI;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -40,8 +40,8 @@ public final class NetworkFraudController extends VonageController {
 
     @ResponseBody
     @GetMapping("/camara/numberVerify")
-    public String startVerification(@RequestParam String msisdn, @RequestParam String ngrok) {
-        var redirectUrl = URI.create("https://"+ngrok+".ngrok.app/webhooks/camara/numberVerify");
+    public String startVerification(@RequestParam String msisdn) {
+        var redirectUrl = getServerUrl().resolve(NUMBER_VERIFICATION_REDIRECT_ENDPOINT);
         try {
             return getNumberVerificationClient().initiateVerification(
                     msisdn, redirectUrl, UUID.randomUUID().toString()
@@ -53,7 +53,7 @@ public final class NetworkFraudController extends VonageController {
     }
 
     @ResponseBody
-    @GetMapping(ApplicationConfiguration.NUMBER_VERIFICATION_ENDPOINT)
+    @GetMapping(NUMBER_VERIFICATION_REDIRECT_ENDPOINT)
     public String inboundWebhook(@RequestParam String code, @RequestParam(required = false) String state) {
         System.out.println("Received code '"+code+"' with state '"+state+"'.");
         boolean result = getNumberVerificationClient().verifyNumber(code);

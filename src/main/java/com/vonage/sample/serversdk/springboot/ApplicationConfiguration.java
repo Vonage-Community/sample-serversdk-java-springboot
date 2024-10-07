@@ -22,7 +22,7 @@ public class ApplicationConfiguration {
 			VERIFY_STATUS_ENDPOINT = "/webhooks/verify/status",
 			VOICE_ANSWER_ENDPOINT = "/webhooks/voice/answer",
 			VOICE_EVENT_ENDPOINT = "/webhooks/voice/event",
-			NUMBER_VERIFICATION_ENDPOINT = "/webhooks/camara/numberVerify";
+			NUMBER_VERIFICATION_REDIRECT_ENDPOINT = "/webhooks/numberVerify/redirect";
 
 	final VonageClient vonageClient;
 	final URI serverUrl;
