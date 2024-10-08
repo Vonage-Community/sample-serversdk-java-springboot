@@ -39,6 +39,7 @@ public class ApplicationStartup {
             var existing = ac.getApplication(appIdStr);
             var application = ac.updateApplication(
                     Application.builder(existing)
+                            .improveAi(true)
                             .addCapability(Verify.builder()
                                     .addWebhook(Webhook.Type.STATUS, buildWebhook(VERIFY_STATUS_ENDPOINT)).build()
                             ).addCapability(Messages.builder()

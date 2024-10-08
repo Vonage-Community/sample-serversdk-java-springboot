@@ -1,28 +1,28 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <title>Check for SIM Swap</title>
+    <title>Verify phone number network</title>
     <div th:include="~{fragments/head :: preamble}"></div>
     <script type="text/javascript">
-        const updateSimSwapSnippet = function() {
+        const updateNumberVerificationSnippet = function() {
             updateSnippet(
-                `Instant lastKnownSwapDate = client.getSimSwapClient.retrieveSimSwapDate("${$('#msisdn').val()}");`
+                `URI follow = client.getNumberVerificationClient().initiateVerification("${$('#msisdn').val()}", redirectUrl, null);`
             );
         };
 
         $(document).ready(() => {
-            updateSimSwapSnippet();
-            $('#form').change(updateSimSwapSnippet);
+            updateNumberVerificationSnippet();
+            $('#form').change(updateNumberVerificationSnippet);
         });
     </script>
 </head>
 <body>
 <a href="/">Home</a><br>
-<a href="https://developer.vonage.com/en/sim-swap/overview">SIM Swap API overview</a><br>
+<a href="https://developer.vonage.com/en/number-verification/overview">Number Verification API overview</a><br>
 <hr><br>
 <div class="flex">
     <div class="w-1/3 p-4">
-        <form id="form" th:action="@{/simSwap}" th:object="${simSwapParams}" method="post">
+        <form id="form" th:action="@{/numberVerification}" th:object="${numberVerificationParams}" method="post">
             <div id="to-div" class="md:flex md:items-center mb-6">
                 <div class="md:w-1/3">
                     <label for="msisdn" class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4">
@@ -41,7 +41,7 @@
     <div th:include="~{fragments/head :: java-code-snippet}"></div>
 </div>
 <hr><br>
-<h3 id="sim-swap-date" th:text="${simSwapParams.date}"></h3>
+<h3 id="result" th:text="${numberVerificationParams.result}"></h3>
 <hr>
 </body>
 </html>
