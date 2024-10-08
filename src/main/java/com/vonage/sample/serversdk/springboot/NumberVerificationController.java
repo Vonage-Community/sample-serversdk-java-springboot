@@ -7,7 +7,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 import java.net.URI;
-import java.util.UUID;
 
 @Controller
 public final class NumberVerificationController extends VonageController {
