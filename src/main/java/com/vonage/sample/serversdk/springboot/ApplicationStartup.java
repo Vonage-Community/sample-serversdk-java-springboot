@@ -24,6 +24,7 @@ package com.vonage.sample.serversdk.springboot;
 import com.vonage.client.application.Application;
 import com.vonage.client.application.ApplicationResponseException;
 import com.vonage.client.application.capabilities.Messages;
+import com.vonage.client.application.capabilities.NetworkApis;
 import com.vonage.client.application.capabilities.Verify;
 import com.vonage.client.application.capabilities.Voice;
 import com.vonage.client.common.HttpMethod;
@@ -61,6 +62,11 @@ public class ApplicationStartup {
             var application = ac.updateApplication(
                     Application.builder(existing)
                             .improveAi(true)
+                            .addCapability(NetworkApis.builder()
+                                    .redirectUri(resolveEndpoint(NUMBER_VERIFICATION_REDIRECT_ENDPOINT).toString())
+                                    .networkApplicationId(existing.getCapabilities().getNetworkApis().getNetworkApplicationId())
+                                    .build()
+                            )
                             .addCapability(Verify.builder()
                                     .addWebhook(Webhook.Type.STATUS, buildWebhook(VERIFY_STATUS_ENDPOINT)).build()
                             ).addCapability(Messages.builder()
