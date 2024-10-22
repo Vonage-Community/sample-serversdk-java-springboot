@@ -24,6 +24,7 @@ All the parameters required to run the demo can be provided through environment 
 - `VONAGE_APPLICATION_ID`: Vonage application UUID.
 - `VONAGE_PRIVATE_KEY_PATH`: Absolute path to the private key associated with your Vonage application.
 - `VCR_PORT`: Port to run the demo on. By default, this is `8080`.
+- `VONAGE_SERVER_URL`: The public base URL for the application. For example, this might be your ngrok instance URL.
 
 Other parameters can be provided for convenience or defaults for pre-populating certain fields. These are:
 
@@ -40,8 +41,15 @@ If you have [IntelliJ IDEA](https://www.jetbrains.com/idea/) installed, you can 
 and run it through the IDE, where the entry point is the `Application` class
 (src/main/java/com/vonage/sample/serversdk/springboot/Application.java).
 
-To run the demo standalone from the command line, do `mvn install spring-boot:run`.
+To run the demo standalone from the command line, simply invoke `mvn` or `./mvnw` if you don't have it installed.
 Then open a browser to [localhost:8080](http://localhost:8080) to use the application.
+
+The default Maven goal for this project is `spring-boot:run`. To ensure a full build, you can use `mvn clean install`.
+
+On startup, your Vonage application will be updated with the webhook URLs for the demo.
+This is so that you don't have to manually set the webhook URLs on the dashboard every time you restart
+ngrok (or your preferred HTTP tunneling service). You can verify this manually by checking the application
+from [the Vonage dashboard](https://dashboard.nexmo.com/applications).
 
 ### Maven and Gradle
 As a demo application, this project uses Maven, however it can be adapted to work with Gradle too.
