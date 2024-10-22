@@ -28,6 +28,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 import java.net.URI;
+import java.util.UUID;
 
 @Controller
 public final class NumberVerificationController extends VonageController {
@@ -53,7 +54,7 @@ public final class NumberVerificationController extends VonageController {
         var redirectUrl = getServerUrl().resolve(NUMBER_VERIFICATION_REDIRECT_ENDPOINT);
         try {
             nvParams.url = getNumberVerificationClient().initiateVerification(
-                    nvParams.msisdn, redirectUrl, nvParams.msisdn
+                    nvParams.msisdn, redirectUrl, UUID.randomUUID().toString().replace("-", "")
             );
             model.addAttribute(NUMBER_VERIFICATION_PARAMS_NAME, nvParams);
             return new RedirectView(nvParams.url.toString());
