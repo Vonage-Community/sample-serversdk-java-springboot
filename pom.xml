@@ -42,7 +42,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.4</version>
+        <version>3.3.5</version>
     </parent>
 
     <properties>
@@ -54,7 +54,7 @@
         <dependency>
             <groupId>com.vonage</groupId>
             <artifactId>server-sdk</artifactId>
-            <version>8.12.0</version>
+            <version>8.13.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
