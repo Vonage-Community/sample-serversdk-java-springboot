@@ -7,7 +7,7 @@ org-projectlombok-lombok = "1.18.34"
 org-springframework-boot-spring-boot-devtools = "3.3.1"
 org-springframework-boot-spring-boot-starter-test = "3.3.1"
 org-springframework-boot-spring-boot-starter-thymeleaf = "3.3.1"
-org-springframework-boot-spring-boot-starter-web = "3.3.1"
+org-springframework-boot-spring-boot-starter-web = "3.3.5"
 
 [libraries]
 com-vonage-server-sdk = { module = "com.vonage:server-sdk", version.ref = "com-vonage-server-sdk" }
