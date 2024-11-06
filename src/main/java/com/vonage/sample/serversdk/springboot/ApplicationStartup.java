@@ -59,27 +59,32 @@ public class ApplicationStartup {
         var appIdStr = configuration.applicationId.toString();
         try {
             var existing = ac.getApplication(appIdStr);
-            var application = ac.updateApplication(
-                    Application.builder(existing)
-                            .improveAi(true)
-                            .addCapability(NetworkApis.builder()
-                                    .redirectUri(resolveEndpoint(NUMBER_VERIFICATION_REDIRECT_ENDPOINT).toString())
-                                    .networkApplicationId(existing.getCapabilities().getNetworkApis().getNetworkApplicationId())
-                                    .build()
-                            )
-                            .addCapability(Verify.builder()
-                                    .addWebhook(Webhook.Type.STATUS, buildWebhook(VERIFY_STATUS_ENDPOINT)).build()
-                            ).addCapability(Messages.builder()
-                                    .addWebhook(Webhook.Type.INBOUND, buildWebhook(INBOUND_MESSAGE_ENDPOINT))
-                                    .addWebhook(Webhook.Type.STATUS, buildWebhook(MESSAGE_STATUS_ENDPOINT))
-                                    .build()
-                            )
-                            .addCapability(Voice.builder()
-                                    .addWebhook(Webhook.Type.ANSWER, buildWebhook(VOICE_ANSWER_ENDPOINT))
-                                    .addWebhook(Webhook.Type.EVENT, buildWebhook(VOICE_EVENT_ENDPOINT))
-                                    .build()
-                            ).build()
-            );
+            var networkApis = existing.getCapabilities().getNetworkApis();
+            var networkApplicationId = networkApis != null ? networkApis.getNetworkApplicationId() : null;
+            var builder = Application.builder(existing).improveAi(true);
+            if (networkApplicationId != null) {
+                builder.addCapability(NetworkApis.builder()
+                        .redirectUri(resolveEndpoint(NUMBER_VERIFICATION_REDIRECT_ENDPOINT).toString())
+                        .networkApplicationId(networkApplicationId)
+                        .build()
+                );
+            }
+            builder.addCapability(Verify.builder()
+                        .addWebhook(Webhook.Type.STATUS, buildWebhook(VERIFY_STATUS_ENDPOINT))
+                        .build()
+                )
+                .addCapability(Messages.builder()
+                        .addWebhook(Webhook.Type.INBOUND, buildWebhook(INBOUND_MESSAGE_ENDPOINT))
+                        .addWebhook(Webhook.Type.STATUS, buildWebhook(MESSAGE_STATUS_ENDPOINT))
+                        .build()
+                )
+                .addCapability(Voice.builder()
+                        .addWebhook(Webhook.Type.ANSWER, buildWebhook(VOICE_ANSWER_ENDPOINT))
+                        .addWebhook(Webhook.Type.EVENT, buildWebhook(VOICE_EVENT_ENDPOINT))
+                        .build()
+                );
+
+            var application = ac.updateApplication(builder.build());
             assert application != null;
         }
         catch (ApplicationResponseException ex) {

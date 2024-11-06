@@ -81,7 +81,7 @@ public class ApplicationConfiguration {
 				parameters.port() : getEnv("VCR_PORT").map(Integer::parseInt).orElse(8080);
 
 		serverUrl = parameters != null && parameters.serverUrl() != null ? parameters.serverUrl() :
-				URI.create(Optional.ofNullable(getEnvWithAlt("VONAGE_SERVER_URL", "VCR_SERVER_URL")).orElseThrow(
+				URI.create(Optional.ofNullable(getEnvWithAlt("VCR_SERVER_URL", "VONAGE_SERVER_URL")).orElseThrow(
 						() -> new IllegalStateException("Server URL not set.")
 				));
 

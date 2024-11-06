@@ -8,6 +8,8 @@ instance:
 debug:
     entrypoint: ["./mvnw", 'spring-boot:run@debug']
 environment:
+    - name: VONAGE_SERVER_URL
+      value: "https://neru-a1b2c3d4-sample-javasdk-spring-dev.euw1.runtime.vonage.cloud"
     - name: TO_NUMBER
       value: "44700000000"
     - name: VONAGE_WHATSAPP_NUMBER
