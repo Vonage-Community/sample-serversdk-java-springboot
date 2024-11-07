@@ -1,5 +1,5 @@
 #!/bin/sh
-zip -vr "app.zip" ./* \
+zip -vr "app.zip" . \
     -x "app.zip" \
     -x "*.DS_Store" \
     -x ".git/*" \
