@@ -6,6 +6,7 @@ zip -vr "app.zip" . \
     -x ".env" \
     -x ".github/*" \
     -x ".idea/*" \
+    -x ".gradle/*" \
     -x "mvnw.cmd" \
     -x "gradlew.bat" \
     -x "create_package.sh" \
