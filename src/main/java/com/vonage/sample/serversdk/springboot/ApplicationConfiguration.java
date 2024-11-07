@@ -81,9 +81,9 @@ public class ApplicationConfiguration {
 				parameters.port() : getEnv("VCR_PORT").map(Integer::parseInt).orElse(8080);
 
 		serverUrl = parameters != null && parameters.serverUrl() != null ? parameters.serverUrl() :
-				URI.create(Optional.ofNullable(getEnvWithAlt("VCR_SERVER_URL", "VONAGE_SERVER_URL")).orElseThrow(
-						() -> new IllegalStateException("Server URL not set.")
-				));
+				URI.create(Optional.ofNullable(getEnvWithAlt("VCR_INSTANCE_PUBLIC_URL", "VONAGE_SERVER_URL"))
+						.orElseThrow(() -> new IllegalStateException("Server URL not set."))
+				);
 
 		var clientBuilder = VonageClient.builder();
 		var apiKey = getEnvWithAlt("VONAGE_API_KEY", "VCR_API_ACCOUNT_ID");

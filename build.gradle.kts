@@ -24,7 +24,7 @@ dependencies {
 }
 
 group = "com.vonage"
-version = "1.0.2"
+version = "1.1.1"
 description = "Vonage Java Server SDK SpringBoot Demo App"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
