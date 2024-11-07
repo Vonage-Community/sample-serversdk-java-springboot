@@ -45,6 +45,9 @@ To run the demo standalone from the command line, simply invoke `mvn` or `./mvnw
 Then open a browser to [localhost:8080](http://localhost:8080) to use the application.
 
 The default Maven goal for this project is `spring-boot:run`. To ensure a full build, you can use `mvn clean install`.
+This will also build a fat JAR file so that the application can be run anywhere by generating an executable file
+with the '-jar-with-dependencies.jar' suffix  in the `target` directory. It will also make this application and
+its dependencies available in your local Maven repository if you wish to use it as a dependency in another project.
 
 On startup, your Vonage application will be updated with the webhook URLs for the demo.
 This is so that you don't have to manually set the webhook URLs on the dashboard every time you restart
