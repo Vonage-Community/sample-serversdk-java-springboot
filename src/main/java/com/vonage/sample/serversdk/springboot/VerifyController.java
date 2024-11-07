@@ -123,7 +123,7 @@ public class VerifyController extends VonageController {
 	public String checkVerificationRequest(@ModelAttribute VerifyParams verifyParams, Model model) {
 		try {
 			String result = "Code matched. Verification successful.";
-			if (verifyParams.codeless || verifyParams.checkUrl != null || verifyParams.userCode == null) {
+			if (verifyParams.codeless || verifyParams.userCode == null) {
 				String code = successfulVerifications.remove(verifyParams.requestId);
 				if (code == null) synchronized (successfulVerifications) {
 					try {
