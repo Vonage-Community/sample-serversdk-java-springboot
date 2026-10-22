@@ -4,7 +4,7 @@
 [versions]
 com-vonage-server-sdk = "8.13.0"
 org-springframework-boot-spring-boot-devtools = "3.3.5"
-org-springframework-boot-spring-boot-starter-thymeleaf = "3.3.5"
+org-springframework-boot-spring-boot-starter-thymeleaf = "3.3.6"
 org-springframework-boot-spring-boot-starter-web = "3.3.5"
 
 [libraries]
