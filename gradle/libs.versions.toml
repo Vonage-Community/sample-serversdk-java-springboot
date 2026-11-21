@@ -2,7 +2,7 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-com-vonage-server-sdk = "8.13.0"
+com-vonage-server-sdk = "9.14.0"
 org-springframework-boot-spring-boot-devtools = "3.3.5"
 org-springframework-boot-spring-boot-starter-thymeleaf = "3.3.5"
 org-springframework-boot-spring-boot-starter-web = "3.3.5"
